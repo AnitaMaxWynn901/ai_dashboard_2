@@ -342,6 +342,49 @@ app.get("/boxes", async (req, res) => {
         nodeLast
       });
     }
+    // ================= SUMMARY COUNTERS =================
+let totalAi = 0;
+let onlineAi = 0;
+let offlineAi = 0;
+
+let totalNode = 0;
+let onlineNode = 0;
+let offlineNode = 0;
+
+for (const row of rows) {
+
+  // AI BOX
+  if (row.aiBoxLast !== "-") {
+    totalAi++;
+
+    if (row.aiBoxStatus === "online") onlineAi++;
+    else offlineAi++;
+  }
+
+  // NODE RED
+  if (row.nodeLast !== "-") {
+    totalNode++;
+
+    if (row.nodeStatus === "online") onlineNode++;
+    else offlineNode++;
+  }
+}
+
+res.json({
+  boxes: rows,
+  summary: {
+    ai: {
+      total: totalAi,
+      online: onlineAi,
+      offline: offlineAi
+    },
+    node: {
+      total: totalNode,
+      online: onlineNode,
+      offline: offlineNode
+    }
+  }
+});
 
     res.json(rows);
 

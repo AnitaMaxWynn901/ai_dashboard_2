@@ -420,11 +420,15 @@
             document.getElementById("logTable").innerHTML = html;
         }
         async function loadLiveStatus() {
-            const res = await fetch("/boxes");
-            const data = await res.json();
 
-            document.getElementById("liveTable").innerHTML =
-                data.map((row, i) => `
+    const res = await fetch("/boxes");
+    const data = await res.json();
+
+    const rows = data.boxes;   // 👈 important change
+
+    // ================= LIVE TABLE =================
+    document.getElementById("liveTable").innerHTML =
+        rows.map((row, i) => `
         <tr>
             <td>${i + 1}</td>
             <td>${row.site}</td>
@@ -450,7 +454,27 @@
             <td>${row.nodeLast}</td>
         </tr>
     `).join("");
-        }
+
+    // ================= SUMMARY CARDS =================
+
+    document.getElementById("aiTotalHB").innerText =
+        data.summary.ai.total;
+
+    document.getElementById("aiOnlineDuration").innerText =
+        data.summary.ai.online;
+
+    document.getElementById("aiOfflineDuration").innerText =
+        data.summary.ai.offline;
+
+    document.getElementById("nodeTotalHB").innerText =
+        data.summary.node.total;
+
+    document.getElementById("nodeOnlineDuration").innerText =
+        data.summary.node.online;
+
+    document.getElementById("nodeOfflineDuration").innerText =
+        data.summary.node.offline;
+}
 
         async function loadStats() {
 
