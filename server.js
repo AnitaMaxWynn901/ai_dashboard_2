@@ -386,7 +386,7 @@ res.json({
   }
 });
 
-    res.json(rows);
+   
 
   } catch (err) {
     console.error(err);
