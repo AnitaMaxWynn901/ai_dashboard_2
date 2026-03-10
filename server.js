@@ -452,7 +452,7 @@ for (const boxCode of nodeBoxes) {
 
   if (
     lastStatus.online_status === "online" &&
-    Date.now() - new Date(lastHeartbeat.timestamp).getTime() > HEARTBEAT_TIMEOUT
+    Date.now() - new Date(lastHeartbeat.timestamp).getTime() >  3 * 60 * 1000
   ) {
 
     await saveLog({
