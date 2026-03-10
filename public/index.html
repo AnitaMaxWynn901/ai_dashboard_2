@@ -327,6 +327,7 @@
     </div>
 
     <script>
+        let filterApplied = false;
         function parseTS(ts) {
             const [d, t] = ts.split(" ");
             const [day, mon, yr] = d.split("/");
@@ -521,33 +522,36 @@
         }
         function applyFilter() {
 
-            const type = document.getElementById("typeFilter").value;
-            const boxCode = document.getElementById("boxCodeFilter").value;
-            const from = document.getElementById("fromFilter").value;
-            const to = document.getElementById("toFilter").value;
+    const type = document.getElementById("typeFilter").value;
+    const boxCode = document.getElementById("boxCodeFilter").value;
+    const from = document.getElementById("fromFilter").value;
+    const to = document.getElementById("toFilter").value;
 
-            const noFilterSelected =
-                type === "ALL" &&
-                !boxCode &&
-                !from &&
-                !to;
+    const noFilterSelected =
+        type === "ALL" &&
+        !boxCode &&
+        !from &&
+        !to;
 
-            if (noFilterSelected) {
-                loadLogs(false);  // show last 5
-            } else {
-                loadLogs(true);   // show filtered results
-            }
-        }
+    if (noFilterSelected) {
+        filterApplied = false;
+        loadLogs(false);   // show last 5
+    } else {
+        filterApplied = true;
+        loadLogs(true);    // show filtered results
+    }
+}
         function resetFilter() {
-            document.getElementById("typeFilter").value = "ALL";
-            document.getElementById("boxCodeFilter").value = "";
-            document.getElementById("fromFilter").value = "";
-            document.getElementById("toFilter").value = "";
 
-            loadLogs(false);  // show last 5 again
-            loadStats();
-        }
+    filterApplied = false;
 
+    document.getElementById("typeFilter").value = "ALL";
+    document.getElementById("boxCodeFilter").value = "";
+    document.getElementById("fromFilter").value = "";
+    document.getElementById("toFilter").value = "";
+
+    loadLogs(false);   // show latest 5 again
+}
         // Initial Load
         loadFilters();
         loadLiveStatus();
@@ -555,20 +559,15 @@
 
         // Auto Refresh
        setInterval(() => {
+
     loadLiveStatus();
 
-    const type = document.getElementById("typeFilter").value;
-    const boxCode = document.getElementById("boxCodeFilter").value;
-    const from = document.getElementById("fromFilter").value;
-    const to = document.getElementById("toFilter").value;
+    if (filterApplied) {
+        loadLogs(true);   // keep showing filtered data
+    } else {
+        loadLogs(false);  // show latest 5 logs
+    }
 
-    const noFilter =
-        type === "ALL" &&
-        !boxCode &&
-        !from &&
-        !to;
-
-    
 }, 5000);
     </script>
 </body>
