@@ -554,11 +554,25 @@
         loadLogs(false);   // show last 5
 
         // Auto Refresh
-        setInterval(() => {
-            loadLiveStatus();
-            loadLogs(false);
+       setInterval(() => {
+    loadLiveStatus();
 
-        }, 5000);
+    const type = document.getElementById("typeFilter").value;
+    const boxCode = document.getElementById("boxCodeFilter").value;
+    const from = document.getElementById("fromFilter").value;
+    const to = document.getElementById("toFilter").value;
+
+    const noFilter =
+        type === "ALL" &&
+        !boxCode &&
+        !from &&
+        !to;
+
+    if (noFilter) {
+        loadLogs(false); // only refresh when no filter is applied
+    }
+
+}, 5000);
     </script>
 </body>
 
