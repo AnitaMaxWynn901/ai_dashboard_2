@@ -91,13 +91,14 @@ tbody tr:hover {
     align-items: start; 
 }
 .table-section h2 {
-    margin-top: 0;text-align: center;
+    margin-top: 0;
+    text-align: center;
     margin: 0 0 15px 0;}
 
 .summary-title {
    font-size: 20px;
     font-weight: 600;
-    text-align: left;
+    text-align: center;
     margin: 0 0 15px 0;
 }
 .table-section {
