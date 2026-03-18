@@ -91,8 +91,8 @@ tbody tr:hover {
     align-items: start; 
 }
 .table-section h2 {
-    margin-top: 0;
-}
+    margin-top: 0;text-align: left;
+    margin: 0 0 15px 0;}
 
 .summary-title {
     margin-top: 0;
@@ -137,8 +137,8 @@ tbody tr:hover {
 }
 
 .summary-title {
-    text-align: center;
-    margin-bottom: 10px;
+   text-align: left;
+    margin: 0 0 15px 0;
     font-size: 16px;
     font-weight: 600;
     color: #334155;
