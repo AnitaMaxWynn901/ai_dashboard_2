@@ -116,9 +116,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
 
-                if (current.online_status === true) {
+                if (current.online_status === "online") {
                     totalOnlineMs += durationMs;
-                } else {
+                } else if (current.online_status === "offline") {
                     totalOfflineMs += durationMs;
                 }
             }
@@ -289,6 +289,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
     }, 5000);
-window.applyFilter = applyFilter;
-window.resetFilter = resetFilter;
+    window.applyFilter = applyFilter;
+    window.resetFilter = resetFilter;
 });
