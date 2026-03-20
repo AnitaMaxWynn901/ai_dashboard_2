@@ -69,6 +69,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
     async function loadLogs(showAll = false) {
+        const title = document.getElementById("totalRowsTitle");
+
+        if (appliedFilters.status === "online") {
+            title.innerText = "Total Online";
+        } else if (appliedFilters.status === "offline") {
+            title.innerText = "Total Offline";
+        } else {
+            title.innerText = "Total Rows";
+        }
 
         const { type, boxCode, from, to, status } = appliedFilters;
 
@@ -162,16 +171,28 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>${duration}</td>
     </tr>`;
         }
-        // ✅ Count rows shown in table
+        // Count rows shown in table
         const totalRows = html ? html.split("<tr>").length - 1 : 0;
 
-        // ✅ Sum ALL durations (online + offline)
+        //  Sum ALL durations (online + offline)
         const totalDurationMs = totalOnlineMs + totalOfflineMs;
 
-        // ✅ Update cards
+        //  Update cards
         document.getElementById("totalRows").innerText = totalRows;
         document.getElementById("totalDuration").innerText = formatDuration(totalDurationMs);
         document.getElementById("logTable").innerHTML = html;
+        document.getElementById("logTable").innerHTML = html;
+
+        //  Change card color based on filter
+        const card = document.querySelector(".online-card");
+
+        if (appliedFilters.status === "online") {
+            card.style.color = "#16a34a"; // green
+        } else if (appliedFilters.status === "offline") {
+            card.style.color = "#dc2626"; // red
+        } else {
+            card.style.color = ""; // default
+        }
     }
 
     async function loadLiveStatus() {
