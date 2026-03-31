@@ -301,6 +301,16 @@ document.addEventListener("DOMContentLoaded", () => {
             // value.style.color = "";
         }
     }
+ function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.remove("hidden");
+
+    clearTimeout(window.toastTimer);
+    window.toastTimer = setTimeout(() => {
+        toast.classList.add("hidden");
+    }, 3000);
+}
 
     async function loadLiveStatus() {
 
@@ -375,7 +385,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const lng = parseFloat(document.getElementById("lngInput").value);
 
         if (isNaN(lat) || isNaN(lng)) {
-            alert("Please enter valid latitude and longitude.");
+            showToast("Please enter valid latitude and longitude.");
             return;
         }
 
@@ -397,14 +407,14 @@ document.addEventListener("DOMContentLoaded", () => {
             await loadLocations();
             await loadLiveStatus();
 
-            alert("Location saved successfully.");
+            showToast("Location saved successfully.");
 
             document.getElementById("latInput").value = "";
             document.getElementById("lngInput").value = "";
 
         } catch (err) {
             console.error("Save location failed:", err);
-            alert("Failed to save location.");
+            showToast("Failed to save location.");
         }
     }
     // async function loadStats() {

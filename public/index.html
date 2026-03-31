@@ -174,37 +174,39 @@
             </tbody>
         </table>
     </div>
-    <div class ="divider"></div>
-    <h2 >AI Box Location Map</h2>
+    <div class="divider"></div>
+    <h2>AI Box Location Map</h2>
 
-<div class="location-editor">
-   <select id="locationBox">
-    <option value="">Select Box</option>
-</select>
+    <div class="location-editor">
+        <select id="locationBox">
+            <option value="">Select Box</option>
+        </select>
 
-    <input type="number" id="latInput" placeholder="Latitude" step="any">
-    <input type="number" id="lngInput" placeholder="Longitude" step="any">
+        <input type="number" id="latInput" placeholder="Latitude" step="any">
+        <input type="number" id="lngInput" placeholder="Longitude" step="any">
 
-    <button onclick="saveLocation()" class="btn-primary">Save Location</button>
-    
-</div>
-<div class="location-editor">
-<select id="searchBox">
-    <option value="">Select Box</option>
-</select>
-<button onclick="findBoxOnMap()" class="btn-primary">Find Box</button>
-</div>
-<div class="map-section">
-    <div id="map" style="height: 450px; max-width: 1100px; margin: 20px auto; border-radius: 12px;"></div>
-</div>
-  
+        <button onclick="saveLocation()" class="btn-primary">Save Location</button>
+
+    </div>
+    <div class="location-editor">
+        <select id="searchBox">
+            <option value="">Select Box</option>
+        </select>
+        <button onclick="findBoxOnMap()" class="btn-primary">Find Box</button>
+    </div>
     <div class="map-section">
-       
+        <div id="map" style="height: 450px; max-width: 1100px; margin: 20px auto; border-radius: 12px;"></div>
+    </div>
+
+    <div class="map-section">
+
         <div class="table-responsive">
             <div id="map" style="height: 450px;"></div>
         </div>
-        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-        <script src="script.js"></script>
+    </div>
+    <div id="toast" class="toast hidden"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="script.js"></script>
 
 </body>
 
