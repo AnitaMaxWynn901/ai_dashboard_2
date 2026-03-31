@@ -93,6 +93,7 @@ let markers = {};
             markers[row.site] = marker;
         });
     }
+  
     function parseTS(ts) {
         const [d, t] = ts.split(" ");
         const [day, mon, yr] = d.split("/");
@@ -338,6 +339,44 @@ let markers = {};
             console.error("Live status load failed:", err);
         }
     }
+    async function saveLocation() {
+    const boxCode = document.getElementById("locationBox").value;
+    const lat = parseFloat(document.getElementById("latInput").value);
+    const lng = parseFloat(document.getElementById("lngInput").value);
+
+    if (isNaN(lat) || isNaN(lng)) {
+        alert("Please enter valid latitude and longitude.");
+        return;
+    }
+
+    try {
+        const res = await fetch("/locations", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ boxCode, lat, lng })
+        });
+
+        const result = await res.json();
+
+        if (!res.ok) {
+            throw new Error(result.error || "Failed to save location");
+        }
+
+        await loadLocations();
+        await loadLiveStatus();
+
+        alert("Location saved successfully.");
+
+        document.getElementById("latInput").value = "";
+        document.getElementById("lngInput").value = "";
+
+    } catch (err) {
+        console.error("Save location failed:", err);
+        alert("Failed to save location.");
+    }
+}
     // async function loadStats() {
 
     //     const type = document.getElementById("typeFilter").value;
@@ -427,4 +466,5 @@ let markers = {};
     }, 5000);
     window.applyFilter = applyFilter;
     window.resetFilter = resetFilter;
+    window.saveLocation = saveLocation;
 });
