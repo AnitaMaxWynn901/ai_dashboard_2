@@ -466,7 +466,31 @@ body > h2::before {
   border-radius: 99px;
   display: inline-block;
 }
+/* ================= LOCATION EDITOR ================= */
+.location-editor {
+  max-width: 1100px;
+  margin: 0 auto 20px;
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+  background: var(--surface);
+  padding: 18px 20px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
 
+.location-editor select,
+.location-editor input {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  font-size: 13px;
+  font-family: var(--font-body);
+  background: var(--surface-2);
+  color: var(--text-1);
+}
 /* ================= MONITORING UI ================= */
 tr.offline-row {
   background: var(--offline-bg) !important;
