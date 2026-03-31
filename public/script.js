@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     let map;
-let markers = {};
+    let markers = {};
     let boxLocationMap = {
         "HQDZKE6BCJEBB1231": { lat: 18.745628785633777, lng: 98.9807518169815 },
     };
@@ -28,27 +28,27 @@ let markers = {};
         }).addTo(map);
     }
     async function loadLocations() {
-    try {
-        const res = await fetch("/locations");
-        const data = await res.json();
+        try {
+            const res = await fetch("/locations");
+            const data = await res.json();
 
-        if (!Array.isArray(data) || data.length === 0) {
-            return; // keep existing fallback boxLocationMap
+            if (!Array.isArray(data) || data.length === 0) {
+                return; // keep existing fallback boxLocationMap
+            }
+
+            boxLocationMap = {};
+
+            data.forEach(loc => {
+                boxLocationMap[loc.boxCode] = {
+                    lat: loc.lat,
+                    lng: loc.lng
+                };
+            });
+
+        } catch (err) {
+            console.error("Failed to load locations:", err);
         }
-
-        boxLocationMap = {};
-
-        data.forEach(loc => {
-            boxLocationMap[loc.boxCode] = {
-                lat: loc.lat,
-                lng: loc.lng
-            };
-        });
-
-    } catch (err) {
-        console.error("Failed to load locations:", err);
     }
-}
     function getMarkerColor(aiStatus, nodeStatus) {
         if (aiStatus === "online" && nodeStatus === "online") return "green";
         if (aiStatus === "offline" && nodeStatus === "offline") return "red";
@@ -70,13 +70,13 @@ let markers = {};
         `;
 
             // If marker already exists → update popup only
-           if (markers[row.site]) {
-    markers[row.site].setStyle({
-        fillColor: color
-    });
-    markers[row.site].setPopupContent(popupContent);
-    return;
-}
+            if (markers[row.site]) {
+                markers[row.site].setStyle({
+                    fillColor: color
+                });
+                markers[row.site].setPopupContent(popupContent);
+                return;
+            }
 
             // Create colored circle marker
             const marker = L.circleMarker([location.lat, location.lng], {
@@ -93,7 +93,7 @@ let markers = {};
             markers[row.site] = marker;
         });
     }
-  
+
     function parseTS(ts) {
         const [d, t] = ts.split(" ");
         const [day, mon, yr] = d.split("/");
@@ -120,35 +120,40 @@ let markers = {};
 
         input.value = `${yyyy}-${mm}-${dd}T00:00`;
     }
-    async function loadFilters() {
-        try {
-            const res = await fetch("/filters");
-            const data = await res.json();
+   async function loadFilters() {
+    try {
+        const res = await fetch("/filters");
+        const data = await res.json();
 
-            const boxSelect = document.getElementById("boxCodeFilter");
+        const boxSelect = document.getElementById("boxCodeFilter");
+        const locationSelect = document.getElementById("locationBox");
 
+        boxSelect.innerHTML = '<option value="">All Box Codes</option>';
+        locationSelect.innerHTML = '<option value="">Select Box</option>';
 
-            // Reset options
-            boxSelect.innerHTML = '<option value="">All Box Codes</option>';
+        data.boxCodes.forEach(code => {
+            if (code) {
 
+                const displayName = boxNameMap[code] || code;
 
-            data.boxCodes.forEach(code => {
-                if (code) {
-                    const displayName = boxNameMap[code] || code;
+                boxSelect.innerHTML += `
+                    <option value="${code}">
+                        ${displayName}
+                    </option>
+                `;
 
-                    boxSelect.innerHTML += `
-            <option value="${code}">
-                ${displayName}
-            </option>
-        `;
-                }
-            });
+                locationSelect.innerHTML += `
+                    <option value="${code}">
+                        ${displayName}
+                    </option>
+                `;
+            }
+        });
 
-
-        } catch (err) {
-            console.error("Failed to load filters:", err);
-        }
+    } catch (err) {
+        console.error("Failed to load filters:", err);
     }
+}
     async function loadLogs(showAll = false) {
 
 
@@ -340,43 +345,43 @@ let markers = {};
         }
     }
     async function saveLocation() {
-    const boxCode = document.getElementById("locationBox").value;
-    const lat = parseFloat(document.getElementById("latInput").value);
-    const lng = parseFloat(document.getElementById("lngInput").value);
+        const boxCode = document.getElementById("locationBox").value;
+        const lat = parseFloat(document.getElementById("latInput").value);
+        const lng = parseFloat(document.getElementById("lngInput").value);
 
-    if (isNaN(lat) || isNaN(lng)) {
-        alert("Please enter valid latitude and longitude.");
-        return;
-    }
-
-    try {
-        const res = await fetch("/locations", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ boxCode, lat, lng })
-        });
-
-        const result = await res.json();
-
-        if (!res.ok) {
-            throw new Error(result.error || "Failed to save location");
+        if (isNaN(lat) || isNaN(lng)) {
+            alert("Please enter valid latitude and longitude.");
+            return;
         }
 
-        await loadLocations();
-        await loadLiveStatus();
+        try {
+            const res = await fetch("/locations", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ boxCode, lat, lng })
+            });
 
-        alert("Location saved successfully.");
+            const result = await res.json();
 
-        document.getElementById("latInput").value = "";
-        document.getElementById("lngInput").value = "";
+            if (!res.ok) {
+                throw new Error(result.error || "Failed to save location");
+            }
 
-    } catch (err) {
-        console.error("Save location failed:", err);
-        alert("Failed to save location.");
+            await loadLocations();
+            await loadLiveStatus();
+
+            alert("Location saved successfully.");
+
+            document.getElementById("latInput").value = "";
+            document.getElementById("lngInput").value = "";
+
+        } catch (err) {
+            console.error("Save location failed:", err);
+            alert("Failed to save location.");
+        }
     }
-}
     // async function loadStats() {
 
     //     const type = document.getElementById("typeFilter").value;
