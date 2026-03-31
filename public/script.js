@@ -93,6 +93,24 @@ document.addEventListener("DOMContentLoaded", () => {
             markers[row.site] = marker;
         });
     }
+    function findBoxOnMap() {
+    const boxCode = document.getElementById("searchBox").value;
+
+    if (!boxCode) {
+        alert("Please select a box.");
+        return;
+    }
+
+    const marker = markers[boxCode];
+
+    if (!marker) {
+        alert("This box does not have a saved location yet.");
+        return;
+    }
+
+    map.setView(marker.getLatLng(), 16);
+    marker.openPopup();
+}
 
     function parseTS(ts) {
         const [d, t] = ts.split(" ");
@@ -472,4 +490,5 @@ document.addEventListener("DOMContentLoaded", () => {
     window.applyFilter = applyFilter;
     window.resetFilter = resetFilter;
     window.saveLocation = saveLocation;
+    window.findBoxOnMap = findBoxOnMap;
 });
