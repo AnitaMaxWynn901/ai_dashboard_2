@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let map;
 let markers = {};
     let boxLocationMap = {
-        "HMXTKE6BEJHBJ0317": { lat: 18.745628785633777, lng: 98.9807518169815 },
+        "HQDZKE6BCJEBB1231": { lat: 18.745628785633777, lng: 98.9807518169815 },
     };
 
 
