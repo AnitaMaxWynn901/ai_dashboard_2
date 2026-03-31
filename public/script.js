@@ -167,6 +167,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         ${displayName}
                     </option>
                 `;
+                  searchSelect.innerHTML += `
+                    <option value="${code}">
+                        ${displayName}
+                    </option>
+                `;
             }
         });
 
