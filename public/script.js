@@ -145,9 +145,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const boxSelect = document.getElementById("boxCodeFilter");
         const locationSelect = document.getElementById("locationBox");
+        const searchSelect = document.getElementById("searchBox");
 
         boxSelect.innerHTML = '<option value="">All Box Codes</option>';
         locationSelect.innerHTML = '<option value="">Select Box</option>';
+        searchSelect.innerHTML = '<option value="">Select Box</option>';
 
         data.boxCodes.forEach(code => {
             if (code) {
