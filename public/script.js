@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
+    let map;
+let markers = {};
+    let boxLocationMap = {
+        "HMXTKE6BEJHBJ0317": { lat: 18.745628785633777, lng: 98.9807518169815 },
+    };
+
 
     const boxNameMap = {
         "HMXTKE6BEJHBJ0317": "OTOD2",
@@ -14,6 +20,79 @@ document.addEventListener("DOMContentLoaded", () => {
         to: "",
         status: "all"
     };
+    function initMap() {
+        map = L.map('map').setView([13.7563, 100.5018], 6); // Thailand center
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+    }
+    async function loadLocations() {
+    try {
+        const res = await fetch("/locations");
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+            return; // keep existing fallback boxLocationMap
+        }
+
+        boxLocationMap = {};
+
+        data.forEach(loc => {
+            boxLocationMap[loc.boxCode] = {
+                lat: loc.lat,
+                lng: loc.lng
+            };
+        });
+
+    } catch (err) {
+        console.error("Failed to load locations:", err);
+    }
+}
+    function getMarkerColor(aiStatus, nodeStatus) {
+        if (aiStatus === "online" && nodeStatus === "online") return "green";
+        if (aiStatus === "offline" && nodeStatus === "offline") return "red";
+        return "orange";
+    }
+    function updateMapMarkers(rows) {
+
+        rows.forEach(row => {
+
+            const location = boxLocationMap[row.site];
+            if (!location) return;
+
+            const color = getMarkerColor(row.aiBoxStatus, row.nodeStatus);
+
+            const popupContent = `
+            <b>${boxNameMap[row.site] || row.site}</b><br>
+            AI Box: ${row.aiBoxStatus}<br>
+            Node-RED: ${row.nodeStatus}
+        `;
+
+            // If marker already exists → update popup only
+           if (markers[row.site]) {
+    markers[row.site].setStyle({
+        fillColor: color
+    });
+    markers[row.site].setPopupContent(popupContent);
+    return;
+}
+
+            // Create colored circle marker
+            const marker = L.circleMarker([location.lat, location.lng], {
+                radius: 10,
+                fillColor: color,
+                color: "#000",
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map);
+
+            marker.bindPopup(popupContent);
+
+            markers[row.site] = marker;
+        });
+    }
     function parseTS(ts) {
         const [d, t] = ts.split(" ");
         const [day, mon, yr] = d.split("/");
@@ -180,15 +259,15 @@ document.addEventListener("DOMContentLoaded", () => {
         if (appliedFilters.status === "online") {
             title.innerText = "Total Online";
             title.style.color = "#16a34a";
-            value.style.color = "#16a34a";
+            // value.style.color = "#16a34a";
         } else if (appliedFilters.status === "offline") {
             title.innerText = "Total Offline";
             title.style.color = "#dc2626";
-            value.style.color = "#dc2626";
+            // value.style.color = "#dc2626";
         } else {
             title.innerText = "Total";
             title.style.color = "";
-            value.style.color = "";
+            // value.style.color = "";
         }
     }
 
@@ -200,6 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Safe fallback
             const rows = data.boxes || [];
+            updateMapMarkers(rows);
             const summary = data.summary || {
                 ai: { total: 0, online: 0, offline: 0 },
                 node: { total: 0, online: 0, offline: 0 }
@@ -318,8 +398,10 @@ document.addEventListener("DOMContentLoaded", () => {
         loadLogs(false);
     }
     loadFilters();
-    loadLiveStatus();
-
+    initMap();
+    loadLocations().then(() => {
+        loadLiveStatus();
+    });
     // Delay to override browser restore
     setTimeout(() => {
         const fromInput = document.getElementById("fromFilter");
@@ -332,7 +414,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Auto Refresh
     setInterval(() => {
 
-        loadLiveStatus();
+        loadLocations().then(() => {
+            loadLiveStatus();
+        });
 
         if (filterApplied) {
             loadLogs(true);   // keep showing filtered data

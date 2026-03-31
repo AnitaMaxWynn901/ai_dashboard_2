@@ -6,6 +6,7 @@
     <title>AI Box Dashboard</title>
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 
 <body>
@@ -95,11 +96,7 @@
                 </table>
             </div>
         </div>
-
-
-
-
-    </div>
+</div>
     <div class="divider"></div>
     <div class="filter-container">
 
@@ -177,8 +174,13 @@
             </tbody>
         </table>
     </div>
-
+    <div class="map-section">
+    <h2 class="summary-title">AI Box Location Map</h2>
+    <div id="map" style="height: 450px; max-width: 1100px; margin: 20px auto; border-radius: 12px;"></div>
+</div>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="script.js"></script>
+    
 </body>
 
 </html>

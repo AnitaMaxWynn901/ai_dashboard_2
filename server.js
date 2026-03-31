@@ -27,6 +27,13 @@ const logSchema = new mongoose.Schema({
 });
 
 const Log = mongoose.model("Log", logSchema);
+const locationSchema = new mongoose.Schema({
+  boxCode: String,
+  lat: Number,
+  lng: Number
+});
+
+const Location = mongoose.model("Location", locationSchema);
 
 /* ================= UTILITIES ================= */
 
@@ -116,7 +123,36 @@ app.get("/filters", async (req, res) => {
     res.status(500).json({ error: "Failed to load filters" });
   }
 });
+app.get("/locations", async (req, res) => {
+  try {
+    const locations = await Location.find();
+    res.json(locations);
+  } catch (err) {
+    console.error("Failed to fetch locations:", err);
+    res.status(500).json({ error: "Failed to fetch locations" });
+  }
+});
+app.post("/locations", async (req, res) => {
+  try {
+    const { boxCode, lat, lng } = req.body;
 
+    if (!boxCode || lat == null || lng == null) {
+      return res.status(400).json({ error: "Missing fields" });
+    }
+
+    await Location.findOneAndUpdate(
+      { boxCode },
+      { lat, lng },
+      { upsert: true }
+    );
+
+    res.json({ ok: true });
+
+  } catch (err) {
+    console.error("Failed to save location:", err);
+    res.status(500).json({ error: "Failed to save location" });
+  }
+});
 /* =================================================
    AI BOX HEARTBEAT
 ================================================= */
