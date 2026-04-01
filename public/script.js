@@ -97,11 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
             hasFittedMap = true;
         }
     }
-
-    if (bounds.length > 0) {
-        map.fitBounds(bounds, { padding: [40, 40] });
-    }
-}
+    
     function findBoxOnMap() {
         const boxCode = document.getElementById("searchBox").value;
 
@@ -147,7 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         input.value = `${yyyy}-${mm}-${dd}T00:00`;
     }
-   async function loadFilters() {
+    async function loadFilters() {
         try {
             const res = await fetch("/filters");
             const data = await res.json();
@@ -477,35 +473,35 @@ document.addEventListener("DOMContentLoaded", () => {
         loadLogs(false);
     }
     loadFilters();
-initMap();
-loadLocations().then(() => {
-    loadLiveStatus();
-});
-// Delay to override browser restore
-setTimeout(() => {
-    const fromInput = document.getElementById("fromFilter");
-    fromInput.value = "";
-    setDefaultFromDate();
-}, 0);
-
-loadLogs(false);
-
-// Auto Refresh
-setInterval(() => {
-
+    initMap();
     loadLocations().then(() => {
         loadLiveStatus();
     });
+    // Delay to override browser restore
+    setTimeout(() => {
+        const fromInput = document.getElementById("fromFilter");
+        fromInput.value = "";
+        setDefaultFromDate();
+    }, 0);
 
-    if (filterApplied) {
-        loadLogs(true);   // keep showing filtered data
-    } else {
-        loadLogs(false);  // show latest 5 logs
-    }
+    loadLogs(false);
 
-}, 5000);
-window.applyFilter = applyFilter;
-window.resetFilter = resetFilter;
-window.saveLocation = saveLocation;
-window.findBoxOnMap = findBoxOnMap;
+    // Auto Refresh
+    setInterval(() => {
+
+        loadLocations().then(() => {
+            loadLiveStatus();
+        });
+
+        if (filterApplied) {
+            loadLogs(true);   // keep showing filtered data
+        } else {
+            loadLogs(false);  // show latest 5 logs
+        }
+
+    }, 5000);
+    window.applyFilter = applyFilter;
+    window.resetFilter = resetFilter;
+    window.saveLocation = saveLocation;
+    window.findBoxOnMap = findBoxOnMap;
 });
