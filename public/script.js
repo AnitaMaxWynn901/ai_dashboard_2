@@ -1,8 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
     let map;
     let markers = {};
+    let hasFittedMap = false;
     let boxLocationMap = {
-       
+
     };
 
 
@@ -55,64 +56,70 @@ document.addEventListener("DOMContentLoaded", () => {
         return "orange";
     }
     function updateMapMarkers(rows) {
-    const bounds = [];
+        const bounds = [];
 
-    rows.forEach(row => {
-        const location = boxLocationMap[row.site];
-        if (!location) return;
+        rows.forEach(row => {
+            const location = boxLocationMap[row.site];
+            if (!location) return;
 
-        const color = getMarkerColor(row.aiBoxStatus, row.nodeStatus);
+            const color = getMarkerColor(row.aiBoxStatus, row.nodeStatus);
 
-        const popupContent = `
+            const popupContent = `
             <b>${boxNameMap[row.site] || row.site}</b><br>
             AI Box: ${row.aiBoxStatus}<br>
             Node-RED: ${row.nodeStatus}
         `;
 
-        if (markers[row.site]) {
-            markers[row.site].setStyle({
-                fillColor: color
-            });
-            markers[row.site].setPopupContent(popupContent);
-        } else {
-            const marker = L.circleMarker([location.lat, location.lng], {
-                radius: 10,
-                fillColor: color,
-                color: "#000",
-                weight: 1,
-                opacity: 1,
-                fillOpacity: 0.8
-            }).addTo(map);
+            if (markers[row.site]) {
+                markers[row.site].setStyle({
+                    fillColor: color
+                });
+                markers[row.site].setPopupContent(popupContent);
+            } else {
+                const marker = L.circleMarker([location.lat, location.lng], {
+                    radius: 10,
+                    fillColor: color,
+                    color: "#000",
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).addTo(map);
 
-            marker.bindPopup(popupContent);
-            markers[row.site] = marker;
+                marker.bindPopup(popupContent);
+                markers[row.site] = marker;
+            }
+
+            bounds.push([location.lat, location.lng]);
+        });
+
+        if (bounds.length > 0 && !hasFittedMap) {
+            map.fitBounds(bounds, { padding: [40, 40] });
+            hasFittedMap = true;
         }
-
-        bounds.push([location.lat, location.lng]);
-    });
+    }
 
     if (bounds.length > 0) {
         map.fitBounds(bounds, { padding: [40, 40] });
     }
 }
     function findBoxOnMap() {
-    const boxCode = document.getElementById("searchBox").value;
+        const boxCode = document.getElementById("searchBox").value;
 
-    if (!boxCode) {
-        alert("Please select a box.");
-        return;
+        if (!boxCode) {
+            alert("Please select a box.");
+            return;
+        }
+
+        const marker = markers[boxCode];
+
+        if (!marker) {
+            alert("This box does not have a saved location yet.");
+            return;
+        }
+
+        map.setView(marker.getLatLng(), 16);
+        marker.openPopup();
     }
-
-    const marker = markers[boxCode];
-
-    if (!marker) {
-        alert("This box does not have a saved location yet.");
-        return;
-    }
-
-    map.setView(marker.getLatLng(), 16);
-    marker.openPopup();
-}
 
     function parseTS(ts) {
         const [d, t] = ts.split(" ");
@@ -141,46 +148,46 @@ document.addEventListener("DOMContentLoaded", () => {
         input.value = `${yyyy}-${mm}-${dd}T00:00`;
     }
    async function loadFilters() {
-    try {
-        const res = await fetch("/filters");
-        const data = await res.json();
+        try {
+            const res = await fetch("/filters");
+            const data = await res.json();
 
-        const boxSelect = document.getElementById("boxCodeFilter");
-        const locationSelect = document.getElementById("locationBox");
-        const searchSelect = document.getElementById("searchBox");
+            const boxSelect = document.getElementById("boxCodeFilter");
+            const locationSelect = document.getElementById("locationBox");
+            const searchSelect = document.getElementById("searchBox");
 
-        boxSelect.innerHTML = '<option value="">All Box Codes</option>';
-        locationSelect.innerHTML = '<option value="">Select Box</option>';
-        searchSelect.innerHTML = '<option value="">Select Box</option>';
+            boxSelect.innerHTML = '<option value="">All Box Codes</option>';
+            locationSelect.innerHTML = '<option value="">Select Box</option>';
+            searchSelect.innerHTML = '<option value="">Select Box</option>';
 
-        data.boxCodes.forEach(code => {
-            if (code) {
+            data.boxCodes.forEach(code => {
+                if (code) {
 
-                const displayName = boxNameMap[code] || code;
+                    const displayName = boxNameMap[code] || code;
 
-                boxSelect.innerHTML += `
+                    boxSelect.innerHTML += `
                     <option value="${code}">
                         ${displayName}
                     </option>
                 `;
 
-                locationSelect.innerHTML += `
+                    locationSelect.innerHTML += `
                     <option value="${code}">
                         ${displayName}
                     </option>
                 `;
-                  searchSelect.innerHTML += `
+                    searchSelect.innerHTML += `
                     <option value="${code}">
                         ${displayName}
                     </option>
                 `;
-            }
-        });
+                }
+            });
 
-    } catch (err) {
-        console.error("Failed to load filters:", err);
+        } catch (err) {
+            console.error("Failed to load filters:", err);
+        }
     }
-}
     async function loadLogs(showAll = false) {
 
 
@@ -470,35 +477,35 @@ document.addEventListener("DOMContentLoaded", () => {
         loadLogs(false);
     }
     loadFilters();
-    initMap();
+initMap();
+loadLocations().then(() => {
+    loadLiveStatus();
+});
+// Delay to override browser restore
+setTimeout(() => {
+    const fromInput = document.getElementById("fromFilter");
+    fromInput.value = "";
+    setDefaultFromDate();
+}, 0);
+
+loadLogs(false);
+
+// Auto Refresh
+setInterval(() => {
+
     loadLocations().then(() => {
         loadLiveStatus();
     });
-    // Delay to override browser restore
-    setTimeout(() => {
-        const fromInput = document.getElementById("fromFilter");
-        fromInput.value = "";
-        setDefaultFromDate();
-    }, 0);
 
-    loadLogs(false);
+    if (filterApplied) {
+        loadLogs(true);   // keep showing filtered data
+    } else {
+        loadLogs(false);  // show latest 5 logs
+    }
 
-    // Auto Refresh
-    setInterval(() => {
-
-        loadLocations().then(() => {
-            loadLiveStatus();
-        });
-
-        if (filterApplied) {
-            loadLogs(true);   // keep showing filtered data
-        } else {
-            loadLogs(false);  // show latest 5 logs
-        }
-
-    }, 5000);
-    window.applyFilter = applyFilter;
-    window.resetFilter = resetFilter;
-    window.saveLocation = saveLocation;
-    window.findBoxOnMap = findBoxOnMap;
+}, 5000);
+window.applyFilter = applyFilter;
+window.resetFilter = resetFilter;
+window.saveLocation = saveLocation;
+window.findBoxOnMap = findBoxOnMap;
 });
