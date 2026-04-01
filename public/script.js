@@ -55,30 +55,26 @@ document.addEventListener("DOMContentLoaded", () => {
         return "orange";
     }
     function updateMapMarkers(rows) {
+    const bounds = [];
 
-        rows.forEach(row => {
+    rows.forEach(row => {
+        const location = boxLocationMap[row.site];
+        if (!location) return;
 
-            const location = boxLocationMap[row.site];
-            if (!location) return;
+        const color = getMarkerColor(row.aiBoxStatus, row.nodeStatus);
 
-            const color = getMarkerColor(row.aiBoxStatus, row.nodeStatus);
-
-            const popupContent = `
+        const popupContent = `
             <b>${boxNameMap[row.site] || row.site}</b><br>
             AI Box: ${row.aiBoxStatus}<br>
             Node-RED: ${row.nodeStatus}
         `;
 
-            // If marker already exists → update popup only
-            if (markers[row.site]) {
-                markers[row.site].setStyle({
-                    fillColor: color
-                });
-                markers[row.site].setPopupContent(popupContent);
-                return;
-            }
-
-            // Create colored circle marker
+        if (markers[row.site]) {
+            markers[row.site].setStyle({
+                fillColor: color
+            });
+            markers[row.site].setPopupContent(popupContent);
+        } else {
             const marker = L.circleMarker([location.lat, location.lng], {
                 radius: 10,
                 fillColor: color,
@@ -89,10 +85,16 @@ document.addEventListener("DOMContentLoaded", () => {
             }).addTo(map);
 
             marker.bindPopup(popupContent);
-
             markers[row.site] = marker;
-        });
+        }
+
+        bounds.push([location.lat, location.lng]);
+    });
+
+    if (bounds.length > 0) {
+        map.fitBounds(bounds, { padding: [40, 40] });
     }
+}
     function findBoxOnMap() {
     const boxCode = document.getElementById("searchBox").value;
 
