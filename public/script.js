@@ -12,6 +12,11 @@ document.addEventListener("DOMContentLoaded", () => {
         "HQDZKE6BCJEBB1231": "SmartIV",
         "HQDZKE6BCJEBB1101": "LMC"
     };
+    const deviceNameMap = {
+        "HMXTKE6BEJHBJ0317": "Mini PC",
+        "HQDZKE6BCJEBB1231": "Raspberry Pi",
+        "HQDZKE6BCJEBB1101": "Virtual Machine"
+    };
     let filterApplied = false;
 
     let appliedFilters = {
@@ -97,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
             hasFittedMap = true;
         }
     }
-    
+
     function findBoxOnMap() {
         const boxCode = document.getElementById("searchBox").value;
 
@@ -343,7 +348,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         ${row.aiServerStatus || "stopped"}
                     </td>
                     <td>${row.aiServerLast || "-"}</td>
-
+                    <td>${deviceNameMap[row.site] || "-"}</td>
                     <td class="${row.nodeStatus || "offline"}">
                         ${row.nodeStatus || "offline"}
                     </td>
