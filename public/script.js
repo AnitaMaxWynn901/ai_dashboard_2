@@ -102,12 +102,27 @@ document.addEventListener("DOMContentLoaded", () => {
             hasFittedMap = true;
         }
     }
+    function openEditModal() {
+        const modal = document.getElementById("editModal");
+        const selectedBox = document.getElementById("searchBox").value;
+        const locationBox = document.getElementById("locationBox");
 
-    function findBoxOnMap() {
+        modal.classList.remove("hidden");
+
+        if (selectedBox) {
+            locationBox.value = selectedBox;
+            fillLocationInputs();
+        }
+    }
+
+    function closeEditModal() {
+        document.getElementById("editModal").classList.add("hidden");
+    }
+
+   function findBoxOnMap() {
     const boxCode = document.getElementById("searchBox").value;
 
     if (!boxCode) {
-        showToast("Please select a box.", "error");
         return;
     }
 
@@ -135,7 +150,13 @@ document.addEventListener("DOMContentLoaded", () => {
     map.setView(marker.getLatLng(), 16);
     marker.openPopup();
 }
+    function fillLocationInputs() {
+        const boxCode = document.getElementById("locationBox").value;
+        const location = boxLocationMap[boxCode];
 
+        document.getElementById("latInput").value = location ? location.lat : "";
+        document.getElementById("lngInput").value = location ? location.lng : "";
+    }
     function parseTS(ts) {
         const [d, t] = ts.split(" ");
         const [day, mon, yr] = d.split("/");
@@ -173,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             boxSelect.innerHTML = '<option value="">All Box Codes</option>';
             locationSelect.innerHTML = '<option value="">Select Box</option>';
-           searchSelect.innerHTML = `
+            searchSelect.innerHTML = `
     <option value="">Select Box</option>
     <option value="ALL">All Boxes</option>
 `;
@@ -344,7 +365,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 node: { total: 0, online: 0, offline: 0 }
             };
 
-            // ================= LIVE TABLE =================
+            // ================= LIVE TABLE ================= //
             document.getElementById("liveTable").innerHTML =
                 rows.map((row, i) => `
                 <tr>
@@ -373,7 +394,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </tr>
             `).join("");
 
-            // ================= SUMMARY CARDS =================
+            // ================= SUMMARY CARDS =================//
 
             document.getElementById("aiTotalHB").innerText =
                 summary.ai.total;
@@ -421,11 +442,12 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!res.ok) {
                 throw new Error(result.error || "Failed to save location");
             }
-
+            hasFittedMap = false;
             await loadLocations();
             await loadLiveStatus();
 
             alert("Location saved successfully.");
+            closeEditModal();
 
             document.getElementById("latInput").value = "";
             document.getElementById("lngInput").value = "";
@@ -526,4 +548,8 @@ document.addEventListener("DOMContentLoaded", () => {
     window.resetFilter = resetFilter;
     window.saveLocation = saveLocation;
     window.findBoxOnMap = findBoxOnMap;
+    window.openEditModal = openEditModal;
+    window.closeEditModal = closeEditModal;
+    window.fillLocationInputs = fillLocationInputs;
+
 });
