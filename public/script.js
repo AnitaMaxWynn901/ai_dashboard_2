@@ -104,23 +104,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function findBoxOnMap() {
-        const boxCode = document.getElementById("searchBox").value;
+    const boxCode = document.getElementById("searchBox").value;
 
-        if (!boxCode) {
-            alert("Please select a box.");
-            return;
-        }
-
-        const marker = markers[boxCode];
-
-        if (!marker) {
-            alert("This box does not have a saved location yet.");
-            return;
-        }
-
-        map.setView(marker.getLatLng(), 16);
-        marker.openPopup();
+    if (!boxCode) {
+        showToast("Please select a box.", "error");
+        return;
     }
+
+    if (boxCode === "ALL") {
+        const bounds = [];
+
+        Object.values(markers).forEach(marker => {
+            bounds.push(marker.getLatLng());
+        });
+
+        if (bounds.length > 0) {
+            map.fitBounds(bounds, { padding: [40, 40] });
+        }
+
+        return;
+    }
+
+    const marker = markers[boxCode];
+
+    if (!marker) {
+        showToast("This box does not have a saved location yet.", "error");
+        return;
+    }
+
+    map.setView(marker.getLatLng(), 16);
+    marker.openPopup();
+}
 
     function parseTS(ts) {
         const [d, t] = ts.split(" ");
@@ -159,7 +173,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             boxSelect.innerHTML = '<option value="">All Box Codes</option>';
             locationSelect.innerHTML = '<option value="">Select Box</option>';
-            searchSelect.innerHTML = '<option value="">Select Box</option>';
+           searchSelect.innerHTML = `
+    <option value="">Select Box</option>
+    <option value="ALL">All Boxes</option>
+`;
 
             data.boxCodes.forEach(code => {
                 if (code) {
