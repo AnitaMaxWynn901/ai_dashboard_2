@@ -6,8 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let boxLocationMap = {
 
     };
-
-
+    let isPickingLocation = false;
+    let pickedLocationMarker = null;
     let boxMetaMap = {};
 
     let filterApplied = false;
@@ -19,6 +19,10 @@ document.addEventListener("DOMContentLoaded", () => {
         to: "",
         status: "all"
     };
+    function enableMapPickMode() {
+        isPickingLocation = true;
+        alert("Click on the map to select location coordinates.");
+    }
     function openMetaModal() {
         document.getElementById("metaModal").classList.remove("hidden");
     }
@@ -36,6 +40,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function initMap() {
+        map.on("click", (e) => {
+            if (!isPickingLocation) return;
+
+            const { lat, lng } = e.latlng;
+
+            document.getElementById("latInput").value = lat.toFixed(6);
+            document.getElementById("lngInput").value = lng.toFixed(6);
+
+            if (pickedLocationMarker) {
+                map.removeLayer(pickedLocationMarker);
+            }
+
+            pickedLocationMarker = L.marker([lat, lng]).addTo(map);
+
+            isPickingLocation = false;
+        });
         map = L.map('map').setView([13.7563, 100.5018], 6); // Thailand center
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -153,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     fillOpacity: 0.8
                 }).addTo(map);
 
-               marker.bindPopup(popupContent, { autoPan: false });
+                marker.bindPopup(popupContent, { autoPan: false });
                 markers[row.site] = marker;
             }
 
@@ -210,11 +230,11 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-       map.flyTo(marker.getLatLng(), 16, {
-    animate: true,
-    duration: 0.8
-});
-marker.openPopup();
+        map.flyTo(marker.getLatLng(), 16, {
+            animate: true,
+            duration: 0.8
+        });
+        marker.openPopup();
     }
     function fillLocationInputs() {
         const boxCode = document.getElementById("locationBox").value;
@@ -617,11 +637,12 @@ marker.openPopup();
     window.findBoxOnMap = findBoxOnMap;
 
     window.fillLocationInputs = fillLocationInputs;
-window.openEditModal = openEditModal;
-window.closeEditModal = closeEditModal;
+    window.openEditModal = openEditModal;
+    window.closeEditModal = closeEditModal;
     window.openMetaModal = openMetaModal;
     window.closeMetaModal = closeMetaModal;
     window.fillMetaInputs = fillMetaInputs;
     window.saveBoxMeta = saveBoxMeta;
+    window.enableMapPickMode = enableMapPickMode;
 
 });
