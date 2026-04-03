@@ -40,28 +40,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function initMap() {
-        map.on("click", (e) => {
-            if (!isPickingLocation) return;
+    map = L.map('map').setView([13.7563, 100.5018], 6);
 
-            const { lat, lng } = e.latlng;
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
 
-            document.getElementById("latInput").value = lat.toFixed(6);
-            document.getElementById("lngInput").value = lng.toFixed(6);
+    map.on("click", (e) => {
+        if (!isPickingLocation) return;
 
-            if (pickedLocationMarker) {
-                map.removeLayer(pickedLocationMarker);
-            }
+        const { lat, lng } = e.latlng;
 
-            pickedLocationMarker = L.marker([lat, lng]).addTo(map);
+        document.getElementById("latInput").value = lat.toFixed(6);
+        document.getElementById("lngInput").value = lng.toFixed(6);
 
-            isPickingLocation = false;
-        });
-        map = L.map('map').setView([13.7563, 100.5018], 6); // Thailand center
+        if (pickedLocationMarker) {
+            map.removeLayer(pickedLocationMarker);
+        }
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-    }
+        pickedLocationMarker = L.marker([lat, lng]).addTo(map);
+
+        isPickingLocation = false;
+    });
+}
     async function saveBoxMeta() {
         const boxCode = document.getElementById("metaBox").value;
         const boxName = document.getElementById("boxNameInput").value.trim();
