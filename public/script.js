@@ -194,11 +194,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const color = getMarkerColor(row.aiBoxStatus, row.nodeStatus);
 
             const popupContent = `
-           <b>${boxMetaMap[row.site]?.boxName || row.site}</b><br>
-            AI Box: ${row.aiBoxStatus}<br>
-            Node-RED: ${row.nodeStatus}
-        `;
-
+   <b>${boxMetaMap[row.site]?.boxName || row.site}</b><br>
+   AI Box: <span class="${row.aiBoxStatus === "online" ? "status-online" : "status-offline"}">
+       ${row.aiBoxStatus}
+   </span><br>
+   Node-RED: <span class="${row.nodeStatus === "online" ? "status-online" : "status-offline"}">
+       ${row.nodeStatus}
+   </span>
+`;
             if (markers[row.site]) {
                 markers[row.site].setLatLng([location.lat, location.lng]);
                 markers[row.site].setStyle({
