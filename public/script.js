@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let map;
     let markers = {};
     let hasFittedMap = false;
+    let selectedDeviceBox = "";
     let boxLocationMap = {
 
     };
@@ -12,11 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "HQDZKE6BCJEBB1231": "SmartIV",
         "HQDZKE6BCJEBB1101": "LMC"
     };
-    const deviceNameMap = {
-        "HMXTKE6BEJHBJ0317": "Mini PC",
-        "HQDZKE6BCJEBB1231": "Raspberry Pi",
-        "HQDZKE6BCJEBB1101": "Virtual Machine"
-    };
+
     let filterApplied = false;
 
     let appliedFilters = {
@@ -26,6 +23,17 @@ document.addEventListener("DOMContentLoaded", () => {
         to: "",
         status: "all"
     };
+    function openDeviceModal(boxCode) {
+        selectedDeviceBox = boxCode;
+
+        document.getElementById("deviceBoxDisplay").value = boxNameMap[boxCode] || boxCode;
+        document.getElementById("deviceNameInput").value = "";
+        document.getElementById("deviceModal").classList.remove("hidden");
+    }
+
+    function closeDeviceModal() {
+        document.getElementById("deviceModal").classList.add("hidden");
+    }
     function initMap() {
         map = L.map('map').setView([13.7563, 100.5018], 6); // Thailand center
 
@@ -119,37 +127,37 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("editModal").classList.add("hidden");
     }
 
-   function findBoxOnMap() {
-    const boxCode = document.getElementById("searchBox").value;
+    function findBoxOnMap() {
+        const boxCode = document.getElementById("searchBox").value;
 
-    if (!boxCode) {
-        return;
-    }
-
-    if (boxCode === "ALL") {
-        const bounds = [];
-
-        Object.values(markers).forEach(marker => {
-            bounds.push(marker.getLatLng());
-        });
-
-        if (bounds.length > 0) {
-            map.fitBounds(bounds, { padding: [40, 40] });
+        if (!boxCode) {
+            return;
         }
 
-        return;
+        if (boxCode === "ALL") {
+            const bounds = [];
+
+            Object.values(markers).forEach(marker => {
+                bounds.push(marker.getLatLng());
+            });
+
+            if (bounds.length > 0) {
+                map.fitBounds(bounds, { padding: [40, 40] });
+            }
+
+            return;
+        }
+
+        const marker = markers[boxCode];
+
+        if (!marker) {
+            showToast("This box does not have a saved location yet.", "error");
+            return;
+        }
+
+        map.setView(marker.getLatLng(), 16);
+        marker.openPopup();
     }
-
-    const marker = markers[boxCode];
-
-    if (!marker) {
-        showToast("This box does not have a saved location yet.", "error");
-        return;
-    }
-
-    map.setView(marker.getLatLng(), 16);
-    marker.openPopup();
-}
     function fillLocationInputs() {
         const boxCode = document.getElementById("locationBox").value;
         const location = boxLocationMap[boxCode];
@@ -386,7 +394,14 @@ document.addEventListener("DOMContentLoaded", () => {
                         ${row.aiServerStatus || "stopped"}
                     </td>
                     <td>${row.aiServerLast || "-"}</td>
-                    <td>${deviceNameMap[row.site] || "-"}</td>
+                    <td>
+    <div class="device-name-cell">
+        <span>${row.deviceName || "-"}</span>
+        <button class="btn-secondary btn-small" onclick="openDeviceModal('${row.site}')">
+            Edit
+        </button>
+    </div>
+</td>
                     <td class="${row.nodeStatus || "offline"}">
                         ${row.nodeStatus || "offline"}
                     </td>
@@ -551,5 +566,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.openEditModal = openEditModal;
     window.closeEditModal = closeEditModal;
     window.fillLocationInputs = fillLocationInputs;
+    window.openDeviceModal = openDeviceModal;
+    window.closeDeviceModal = closeDeviceModal;
 
 });

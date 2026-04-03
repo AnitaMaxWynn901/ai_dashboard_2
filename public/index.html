@@ -176,6 +176,28 @@
             </tbody>
         </table>
     </div>
+    <div id="deviceModal" class="modal hidden">
+    <div class="modal-content">
+        <h2 class="history-heading">Edit Device Name</h2>
+
+        <div class="modal-form">
+            <div class="filter-group">
+                <label>Box</label>
+                <input type="text" id="deviceBoxDisplay" readonly>
+            </div>
+
+            <div class="filter-group">
+                <label>Device Name</label>
+                <input type="text" id="deviceNameInput" placeholder="Enter device name">
+            </div>
+        </div>
+
+        <div class="modal-buttons">
+            <button onclick="saveDeviceName()" class="btn-primary">Save</button>
+            <button onclick="closeDeviceModal()" class="btn-secondary">Cancel</button>
+        </div>
+    </div>
+</div>
     <div class="divider"></div>
     <div id="editModal" class="modal hidden">
         <div class="modal-content">
@@ -211,7 +233,7 @@
             <option value="">Select Box</option>
         </select>
 
-        <button onclick="openEditModal()" class="btn-secondary">Edit</button>
+        <button onclick="openEditModal()" class="btn-primary">Edit</button>
     </div>
 
     <div class="map-section">

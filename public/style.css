@@ -560,6 +560,19 @@ tr.offline-row:hover {
     padding: 16px;
   }
 }
+.device-name-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-small {
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+}
 .modal {
   position: fixed;
   inset: 0;
