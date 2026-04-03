@@ -6,8 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let boxLocationMap = {
 
     };
-    let isPickingLocation = false;
-    let pickedLocationMarker = null;
     let boxMetaMap = {};
 
     let filterApplied = false;
@@ -19,11 +17,64 @@ document.addEventListener("DOMContentLoaded", () => {
         to: "",
         status: "all"
     };
-    function enableMapPickMode() {
-        isPickingLocation = true;
-        document.getElementById("editModal").classList.add("hidden");
-        alert("Click on the map to select location coordinates.");
+    function openMapPickerModal() {
+    document.getElementById("mapPickerModal").classList.remove("hidden");
+
+    setTimeout(() => {
+        if (!pickerMap) {
+            pickerMap = L.map('pickerMap').setView(map.getCenter(), map.getZoom());
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(pickerMap);
+
+            pickerMap.on("click", (e) => {
+                pickedLatLng = e.latlng;
+
+                if (pickedLocationMarker) {
+                    pickerMap.removeLayer(pickedLocationMarker);
+                }
+
+                pickedLocationMarker = L.marker([pickedLatLng.lat, pickedLatLng.lng]).addTo(pickerMap);
+            });
+        } else {
+            pickerMap.setView(map.getCenter(), map.getZoom());
+            pickerMap.invalidateSize();
+        }
+
+        // If current lat/lng already exist, show current point
+        const lat = parseFloat(document.getElementById("latInput").value);
+        const lng = parseFloat(document.getElementById("lngInput").value);
+
+        if (!isNaN(lat) && !isNaN(lng)) {
+            pickedLatLng = { lat, lng };
+
+            if (pickedLocationMarker) {
+                pickerMap.removeLayer(pickedLocationMarker);
+            }
+
+            pickedLocationMarker = L.marker([lat, lng]).addTo(pickerMap);
+            pickerMap.setView([lat, lng], 16);
+        }
+    }, 100);
+}
+
+function closeMapPickerModal() {
+    document.getElementById("mapPickerModal").classList.add("hidden");
+}
+
+function usePickedLocation() {
+    if (!pickedLatLng) {
+        alert("Please click a location on the map first.");
+        return;
     }
+
+    document.getElementById("latInput").value = pickedLatLng.lat.toFixed(6);
+    document.getElementById("lngInput").value = pickedLatLng.lng.toFixed(6);
+
+    closeMapPickerModal();
+}
+    
     function openMetaModal() {
         document.getElementById("metaModal").classList.remove("hidden");
     }
@@ -47,23 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        map.on("click", (e) => {
-            if (!isPickingLocation) return;
-
-            const { lat, lng } = e.latlng;
-
-            document.getElementById("latInput").value = lat.toFixed(6);
-            document.getElementById("lngInput").value = lng.toFixed(6);
-
-            if (pickedLocationMarker) {
-                map.removeLayer(pickedLocationMarker);
-            }
-
-            pickedLocationMarker = L.marker([lat, lng]).addTo(map);
-
-            isPickingLocation = false;
-            document.getElementById("editModal").classList.remove("hidden");
-        });
+        
     }
     async function saveBoxMeta() {
         const boxCode = document.getElementById("metaBox").value;
@@ -647,5 +682,8 @@ document.addEventListener("DOMContentLoaded", () => {
     window.fillMetaInputs = fillMetaInputs;
     window.saveBoxMeta = saveBoxMeta;
     window.enableMapPickMode = enableMapPickMode;
+    window.openMapPickerModal = openMapPickerModal;
+window.closeMapPickerModal = closeMapPickerModal;
+window.usePickedLocation = usePickedLocation;
 
 });

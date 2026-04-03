@@ -260,7 +260,18 @@
             </div>
         </div>
     </div>
+<div id="mapPickerModal" class="modal hidden">
+    <div class="modal-content" style="max-width: 900px;">
+        <h2 class="history-heading">Select Location Coordinates</h2>
 
+        <div id="pickerMap" style="height: 420px; border-radius: 12px; margin-top: 16px;"></div>
+
+        <div class="modal-buttons">
+            <button type="button" onclick="usePickedLocation()" class="btn-primary">Use This Location</button>
+            <button type="button" onclick="closeMapPickerModal()" class="btn-secondary">Cancel</button>
+        </div>
+    </div>
+</div>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="script.js"></script>
 
