@@ -67,10 +67,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error(result.error || "Failed to save device name");
             }
 
-            await loadLiveStatus();
-            closeDeviceModal();
             alert("Device name saved successfully.");
 
+            closeDeviceModal();
+            loadLiveStatus();
         } catch (err) {
             console.error("Save device name failed:", err);
             alert("Failed to save device name.");
@@ -492,12 +492,14 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!res.ok) {
                 throw new Error(result.error || "Failed to save location");
             }
+            alert("Location saved successfully.");
+            closeEditModal();
+
             hasFittedMap = false;
+
             await loadLocations();
             await loadLiveStatus();
 
-            alert("Location saved successfully.");
-            closeEditModal();
 
             document.getElementById("latInput").value = "";
             document.getElementById("lngInput").value = "";
