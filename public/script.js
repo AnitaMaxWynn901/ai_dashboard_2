@@ -199,6 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
 
             if (markers[row.site]) {
+                markers[row.site].setLatLng([location.lat, location.lng]);
                 markers[row.site].setStyle({
                     fillColor: color
                 });
@@ -585,7 +586,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
             await loadLocations();
             await loadLiveStatus();
-
+            const marker = markers[boxCode];
+            if (marker) {
+                map.flyTo(marker.getLatLng(), 16, {
+                    animate: true,
+                    duration: 0.8
+                });
+                marker.openPopup();
+            }
 
             document.getElementById("latInput").value = "";
             document.getElementById("lngInput").value = "";
