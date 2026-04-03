@@ -413,7 +413,52 @@ tbody tr:hover { background: var(--blue-soft); }
 .btn-secondary:active {
   transform: translateY(0);
 }
+.status-online {
+    color: #16a34a;
+    font-weight: 600;
+}
 
+.status-offline {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.map-legend {
+    max-width: 1100px;
+    margin: 0 auto 20px;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 14px;
+    color: #374151;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 1px solid #000;
+}
+
+.legend-red {
+    background-color: red;
+}
+
+.legend-orange {
+    background-color: orange;
+}
+
+.legend-green {
+    background-color: green;
+}
 /* ================= HISTORY SUMMARY ================= */
 .history-summary {
   display: flex;
