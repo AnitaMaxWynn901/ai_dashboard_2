@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     function enableMapPickMode() {
         isPickingLocation = true;
+        document.getElementById("editModal").classList.add("hidden");
         alert("Click on the map to select location coordinates.");
     }
     function openMetaModal() {
@@ -40,29 +41,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function initMap() {
-    map = L.map('map').setView([13.7563, 100.5018], 6);
+        map = L.map('map').setView([13.7563, 100.5018], 6);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-    map.on("click", (e) => {
-        if (!isPickingLocation) return;
+        map.on("click", (e) => {
+            if (!isPickingLocation) return;
 
-        const { lat, lng } = e.latlng;
+            const { lat, lng } = e.latlng;
 
-        document.getElementById("latInput").value = lat.toFixed(6);
-        document.getElementById("lngInput").value = lng.toFixed(6);
+            document.getElementById("latInput").value = lat.toFixed(6);
+            document.getElementById("lngInput").value = lng.toFixed(6);
 
-        if (pickedLocationMarker) {
-            map.removeLayer(pickedLocationMarker);
-        }
+            if (pickedLocationMarker) {
+                map.removeLayer(pickedLocationMarker);
+            }
 
-        pickedLocationMarker = L.marker([lat, lng]).addTo(map);
+            pickedLocationMarker = L.marker([lat, lng]).addTo(map);
 
-        isPickingLocation = false;
-    });
-}
+            isPickingLocation = false;
+            document.getElementById("editModal").classList.remove("hidden");
+        });
+    }
     async function saveBoxMeta() {
         const boxCode = document.getElementById("metaBox").value;
         const boxName = document.getElementById("boxNameInput").value.trim();
