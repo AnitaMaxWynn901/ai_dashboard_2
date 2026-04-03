@@ -65,7 +65,9 @@
         <div class="table-section">
             <div class="table-header-actions">
                 <h2 class="summary-title">AI Box Live Status</h2>
-                <button onclick="openMetaModal()" class="btn-primary">Edit</button>
+                <div class="filter-buttons">
+                    <button onclick="openMetaModal()" class="btn-primary">Edit</button>
+                </div>
             </div>
 
             <div class="table-responsive">
@@ -217,8 +219,10 @@
         <select id="searchBox" onchange="findBoxOnMap()">
             <option value="">Select Box</option>
         </select>
+        <div class="filter-buttons"> 
+            <button onclick="openEditModal()" class="btn-primary">Edit</button>
+        </div>
 
-        <button onclick="openEditModal()" class="btn-primary">Edit</button>
     </div>
 
     <div class="map-section">
