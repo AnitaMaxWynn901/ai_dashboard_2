@@ -34,6 +34,12 @@ const locationSchema = new mongoose.Schema({
 });
 
 const Location = mongoose.model("Location", locationSchema);
+const deviceSchema = new mongoose.Schema({
+  boxCode: String,
+  deviceName: String
+});
+
+const Device = mongoose.model("Device", deviceSchema);
 
 /* ================= UTILITIES ================= */
 
@@ -151,6 +157,27 @@ app.post("/locations", async (req, res) => {
   } catch (err) {
     console.error("Failed to save location:", err);
     res.status(500).json({ error: "Failed to save location" });
+  }
+});
+
+app.post("/device", async (req, res) => {
+  try {
+    const { boxCode, deviceName } = req.body;
+
+    if (!boxCode || !deviceName) {
+      return res.status(400).json({ error: "Missing fields" });
+    }
+
+    await Device.findOneAndUpdate(
+      { boxCode },
+      { deviceName },
+      { upsert: true }
+    );
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("Failed to save device name:", err);
+    res.status(500).json({ error: "Failed to save device name" });
   }
 });
 /* =================================================
@@ -364,7 +391,7 @@ app.get("/boxes", async (req, res) => {
           aiServerStatus = "running";
         }
       }
-
+const device = await Device.findOne({ boxCode });
       rows.push({
         site: boxCode,
         aiBoxStatus,
@@ -374,7 +401,8 @@ app.get("/boxes", async (req, res) => {
         aiServerStatus,
         aiServerLast,
         nodeStatus,
-        nodeLast
+        nodeLast,
+         deviceName: device?.deviceName || "-"
       });
     }
     // ================= SUMMARY COUNTERS =================

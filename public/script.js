@@ -41,6 +41,41 @@ document.addEventListener("DOMContentLoaded", () => {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
     }
+    async function saveDeviceName() {
+        const deviceName = document.getElementById("deviceNameInput").value.trim();
+
+        if (!selectedDeviceBox || !deviceName) {
+            alert("Please enter device name.");
+            return;
+        }
+
+        try {
+            const res = await fetch("/device", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    boxCode: selectedDeviceBox,
+                    deviceName
+                })
+            });
+
+            const result = await res.json();
+
+            if (!res.ok) {
+                throw new Error(result.error || "Failed to save device name");
+            }
+
+            await loadLiveStatus();
+            closeDeviceModal();
+            alert("Device name saved successfully.");
+
+        } catch (err) {
+            console.error("Save device name failed:", err);
+            alert("Failed to save device name.");
+        }
+    }
     async function loadLocations() {
         try {
             const res = await fetch("/locations");
@@ -151,7 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const marker = markers[boxCode];
 
         if (!marker) {
-            showToast("This box does not have a saved location yet.", "error");
+            alert("This box does not have a saved location yet.");
             return;
         }
 
@@ -472,20 +507,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Failed to save location.");
         }
     }
-    // async function loadStats() {
 
-    //     const type = document.getElementById("typeFilter").value;
-    //     const boxCode = document.getElementById("boxCodeFilter").value;
-    //     const from = document.getElementById("fromFilter").value;
-    //     const to = document.getElementById("toFilter").value;
-    //     const status = document.getElementById("statusFilter").value;
-
-
-    //     // Still fetch logs so filter stays functional
-    //     await fetch(
-    //         `/logs?type=${type}&boxCode=${boxCode}&from=${from}&to=${to}&status=${status}`
-    //     );
-    // }
     function applyFilter() {
 
         appliedFilters.type = document.getElementById("typeFilter").value;
@@ -568,5 +590,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.fillLocationInputs = fillLocationInputs;
     window.openDeviceModal = openDeviceModal;
     window.closeDeviceModal = closeDeviceModal;
+    window.saveDeviceName = saveDeviceName;
 
 });
