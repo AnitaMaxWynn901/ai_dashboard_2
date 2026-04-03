@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     fillOpacity: 0.8
                 }).addTo(map);
 
-                marker.bindPopup(popupContent);
+               marker.bindPopup(popupContent, { autoPan: false });
                 markers[row.site] = marker;
             }
 
@@ -210,8 +210,11 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        map.setView(marker.getLatLng(), 16);
-        marker.openPopup();
+       map.flyTo(marker.getLatLng(), 16, {
+    animate: true,
+    duration: 0.8
+});
+marker.openPopup();
     }
     function fillLocationInputs() {
         const boxCode = document.getElementById("locationBox").value;
@@ -614,7 +617,8 @@ document.addEventListener("DOMContentLoaded", () => {
     window.findBoxOnMap = findBoxOnMap;
 
     window.fillLocationInputs = fillLocationInputs;
-
+window.openEditModal = openEditModal;
+window.closeEditModal = closeEditModal;
     window.openMetaModal = openMetaModal;
     window.closeMetaModal = closeMetaModal;
     window.fillMetaInputs = fillMetaInputs;
