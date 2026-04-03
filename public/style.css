@@ -105,6 +105,17 @@ table {
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border);
 }
+.table-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.table-header-actions h2 {
+  margin: 0;
+}
 
 th, td {
   padding: 11px 14px;

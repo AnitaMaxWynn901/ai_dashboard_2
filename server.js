@@ -25,7 +25,13 @@ const logSchema = new mongoose.Schema({
   service_status: String,
   type: String
 });
+const boxMetaSchema = new mongoose.Schema({
+  boxCode: String,
+  boxName: String,
+  deviceName: String
+});
 
+const BoxMeta = mongoose.model("BoxMeta", boxMetaSchema);
 const Log = mongoose.model("Log", logSchema);
 const locationSchema = new mongoose.Schema({
   boxCode: String,
@@ -34,12 +40,9 @@ const locationSchema = new mongoose.Schema({
 });
 
 const Location = mongoose.model("Location", locationSchema);
-const deviceSchema = new mongoose.Schema({
-  boxCode: String,
-  deviceName: String
-});
 
-const Device = mongoose.model("Device", deviceSchema);
+
+
 
 /* ================= UTILITIES ================= */
 
@@ -160,26 +163,7 @@ app.post("/locations", async (req, res) => {
   }
 });
 
-app.post("/device", async (req, res) => {
-  try {
-    const { boxCode, deviceName } = req.body;
 
-    if (!boxCode || !deviceName) {
-      return res.status(400).json({ error: "Missing fields" });
-    }
-
-    await Device.findOneAndUpdate(
-      { boxCode },
-      { deviceName },
-      { upsert: true }
-    );
-
-    res.json({ ok: true });
-  } catch (err) {
-    console.error("Failed to save device name:", err);
-    res.status(500).json({ error: "Failed to save device name" });
-  }
-});
 /* =================================================
    AI BOX HEARTBEAT
 ================================================= */
@@ -309,7 +293,34 @@ app.post("/service-status", async (req, res) => {
 /* =================================================
    LIVE STATUS
 ================================================= */
+app.get("/box-meta", async (req, res) => {
+  try {
+    const items = await BoxMeta.find();
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch box meta" });
+  }
+});
 
+app.post("/box-meta", async (req, res) => {
+  try {
+    const { boxCode, boxName, deviceName } = req.body;
+
+    if (!boxCode) {
+      return res.status(400).json({ error: "Missing boxCode" });
+    }
+
+    await BoxMeta.findOneAndUpdate(
+      { boxCode },
+      { boxName, deviceName },
+      { upsert: true }
+    );
+
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to save box meta" });
+  }
+});
 app.get("/boxes", async (req, res) => {
   try {
     const now = Date.now();
@@ -391,7 +402,7 @@ app.get("/boxes", async (req, res) => {
           aiServerStatus = "running";
         }
       }
-const device = await Device.findOne({ boxCode });
+const meta = await BoxMeta.findOne({ boxCode });
       rows.push({
         site: boxCode,
         aiBoxStatus,
@@ -402,7 +413,7 @@ const device = await Device.findOne({ boxCode });
         aiServerLast,
         nodeStatus,
         nodeLast,
-         deviceName: device?.deviceName || "-"
+        deviceName: meta?.deviceName || "-"
       });
     }
     // ================= SUMMARY COUNTERS =================

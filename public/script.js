@@ -2,17 +2,13 @@ document.addEventListener("DOMContentLoaded", () => {
     let map;
     let markers = {};
     let hasFittedMap = false;
-    let selectedDeviceBox = "";
+
     let boxLocationMap = {
 
     };
 
 
-    const boxNameMap = {
-        "HMXTKE6BEJHBJ0317": "OTOD2",
-        "HQDZKE6BCJEBB1231": "SmartIV",
-        "HQDZKE6BCJEBB1101": "LMC"
-    };
+    let boxMetaMap = {};
 
     let filterApplied = false;
 
@@ -23,17 +19,22 @@ document.addEventListener("DOMContentLoaded", () => {
         to: "",
         status: "all"
     };
-    function openDeviceModal(boxCode) {
-        selectedDeviceBox = boxCode;
-
-        document.getElementById("deviceBoxDisplay").value = boxNameMap[boxCode] || boxCode;
-        document.getElementById("deviceNameInput").value = "";
-        document.getElementById("deviceModal").classList.remove("hidden");
+    function openMetaModal() {
+        document.getElementById("metaModal").classList.remove("hidden");
     }
 
-    function closeDeviceModal() {
-        document.getElementById("deviceModal").classList.add("hidden");
+    function closeMetaModal() {
+        document.getElementById("metaModal").classList.add("hidden");
     }
+
+    function fillMetaInputs() {
+        const boxCode = document.getElementById("metaBox").value;
+        const meta = boxMetaMap[boxCode] || {};
+
+        document.getElementById("boxNameInput").value = meta.boxName || "";
+        document.getElementById("deviceNameInput").value = meta.deviceName || "";
+    }
+
     function initMap() {
         map = L.map('map').setView([13.7563, 100.5018], 6); // Thailand center
 
@@ -41,41 +42,60 @@ document.addEventListener("DOMContentLoaded", () => {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
     }
-    async function saveDeviceName() {
+    async function saveBoxMeta() {
+        const boxCode = document.getElementById("metaBox").value;
+        const boxName = document.getElementById("boxNameInput").value.trim();
         const deviceName = document.getElementById("deviceNameInput").value.trim();
 
-        if (!selectedDeviceBox || !deviceName) {
-            alert("Please enter device name.");
+        if (!boxCode) {
+            alert("Please select a box.");
             return;
         }
 
         try {
-            const res = await fetch("/device", {
+            const res = await fetch("/box-meta", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    boxCode: selectedDeviceBox,
-                    deviceName
-                })
+                body: JSON.stringify({ boxCode, boxName, deviceName })
             });
 
             const result = await res.json();
 
             if (!res.ok) {
-                throw new Error(result.error || "Failed to save device name");
+                throw new Error(result.error || "Failed to save box information");
             }
 
-            alert("Device name saved successfully.");
+            alert("Box information saved successfully.");
+            closeMetaModal();
+            loadBoxMeta().then(() => {
+                loadFilters();
+                loadLiveStatus();
+            });
 
-            closeDeviceModal();
-            loadLiveStatus();
         } catch (err) {
-            console.error("Save device name failed:", err);
-            alert("Failed to save device name.");
+            console.error("Save box meta failed:", err);
+            alert("Failed to save box information.");
+        }
+    } async function loadBoxMeta() {
+        try {
+            const res = await fetch("/box-meta");
+            const data = await res.json();
+
+            boxMetaMap = {};
+
+            data.forEach(item => {
+                boxMetaMap[item.boxCode] = {
+                    boxName: item.boxName || "",
+                    deviceName: item.deviceName || ""
+                };
+            });
+        } catch (err) {
+            console.error("Failed to load box meta:", err);
         }
     }
+
     async function loadLocations() {
         try {
             const res = await fetch("/locations");
@@ -113,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const color = getMarkerColor(row.aiBoxStatus, row.nodeStatus);
 
             const popupContent = `
-            <b>${boxNameMap[row.site] || row.site}</b><br>
+           <b>${boxMetaMap[row.site]?.boxName || row.site}</b><br>
             AI Box: ${row.aiBoxStatus}<br>
             Node-RED: ${row.nodeStatus}
         `;
@@ -234,18 +254,20 @@ document.addEventListener("DOMContentLoaded", () => {
             const boxSelect = document.getElementById("boxCodeFilter");
             const locationSelect = document.getElementById("locationBox");
             const searchSelect = document.getElementById("searchBox");
-
+            const metaSelect = document.getElementById("metaBox");
             boxSelect.innerHTML = '<option value="">All Box Codes</option>';
             locationSelect.innerHTML = '<option value="">Select Box</option>';
             searchSelect.innerHTML = `
-    <option value="">Select Box</option>
-    <option value="ALL">All Boxes</option>
-`;
+                <option value="">Select Box</option>
+                 <option value="ALL">All Boxes</option>`;
+            metaSelect.innerHTML = '<option value="">Select Box</option>';
 
             data.boxCodes.forEach(code => {
                 if (code) {
 
-                    const displayName = boxNameMap[code] || code;
+                    const displayName = boxMetaMap[code]?.boxName || code;
+
+
 
                     boxSelect.innerHTML += `
                     <option value="${code}">
@@ -263,7 +285,13 @@ document.addEventListener("DOMContentLoaded", () => {
                         ${displayName}
                     </option>
                 `;
+
+                    metaSelect.innerHTML += `
+                    <option value="${code}">
+                       ${displayName}
+                     </option>`;
                 }
+
             });
 
         } catch (err) {
@@ -356,7 +384,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             html += `
     <tr>
-       <td>${boxNameMap[current.boxCode] || current.boxCode}</td>
+      <td>${boxMetaMap[current.boxCode]?.boxName || current.boxCode}</td>
         <td>${current.source}</td>
         <td class="${current.online_status}">
             ${current.online_status}
@@ -413,7 +441,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 rows.map((row, i) => `
                 <tr>
                     <td>${i + 1}</td>
-                    <td>${boxNameMap[row.site] || row.site}</td>
+                  <td>${boxMetaMap[row.site]?.boxName || row.site}</td>
 
                     <td class="${row.aiBoxStatus || "offline"}">
                         ${row.aiBoxStatus || "offline"}
@@ -429,14 +457,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         ${row.aiServerStatus || "stopped"}
                     </td>
                     <td>${row.aiServerLast || "-"}</td>
-                    <td>
-    <div class="device-name-cell">
-        <span>${row.deviceName || "-"}</span>
-        <button class="btn-secondary btn-small" onclick="openDeviceModal('${row.site}')">
-            Edit
-        </button>
-    </div>
-</td>
+                
+                   <td>${boxMetaMap[row.site]?.deviceName || row.deviceName || "-"}</td>
+
                     <td class="${row.nodeStatus || "offline"}">
                         ${row.nodeStatus || "offline"}
                     </td>
@@ -555,10 +578,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         loadLogs(false);
     }
-    loadFilters();
-    initMap();
-    loadLocations().then(() => {
-        loadLiveStatus();
+    loadBoxMeta().then(() => {
+        loadFilters();
+        initMap();
+        loadLocations().then(() => {
+            loadLiveStatus();
+        });
     });
     // Delay to override browser restore
     setTimeout(() => {
@@ -587,11 +612,12 @@ document.addEventListener("DOMContentLoaded", () => {
     window.resetFilter = resetFilter;
     window.saveLocation = saveLocation;
     window.findBoxOnMap = findBoxOnMap;
-    window.openEditModal = openEditModal;
-    window.closeEditModal = closeEditModal;
+
     window.fillLocationInputs = fillLocationInputs;
-    window.openDeviceModal = openDeviceModal;
-    window.closeDeviceModal = closeDeviceModal;
-    window.saveDeviceName = saveDeviceName;
+
+    window.openMetaModal = openMetaModal;
+    window.closeMetaModal = closeMetaModal;
+    window.fillMetaInputs = fillMetaInputs;
+    window.saveBoxMeta = saveBoxMeta;
 
 });

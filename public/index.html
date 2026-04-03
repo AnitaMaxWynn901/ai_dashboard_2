@@ -63,7 +63,10 @@
         </div>
         <!--: LIVE TABLE -->
         <div class="table-section">
-            <h2 class="summary-title">AI Box Live Status</h2>
+            <div class="table-header-actions">
+                <h2 class="summary-title">AI Box Live Status</h2>
+                <button onclick="openMetaModal()" class="btn-secondary">Edit</button>
+            </div>
 
             <div class="table-responsive">
                 <table>
@@ -176,28 +179,7 @@
             </tbody>
         </table>
     </div>
-    <div id="deviceModal" class="modal hidden">
-    <div class="modal-content">
-        <h2 class="history-heading">Edit Device Name</h2>
-
-        <div class="modal-form">
-            <div class="filter-group">
-                <label>Box</label>
-                <input type="text" id="deviceBoxDisplay" readonly>
-            </div>
-
-            <div class="filter-group">
-                <label>Device Name</label>
-                <input type="text" id="deviceNameInput" placeholder="Enter device name">
-            </div>
-        </div>
-
-        <div class="modal-buttons">
-            <button onclick="saveDeviceName()" class="btn-primary">Save</button>
-            <button onclick="closeDeviceModal()" class="btn-secondary">Cancel</button>
-        </div>
-    </div>
-</div>
+    
     <div class="divider"></div>
     <div id="editModal" class="modal hidden">
         <div class="modal-content">
@@ -242,6 +224,35 @@
             <div id="map" style="height: 450px; max-width: 1100px; margin: 20px auto; border-radius: 12px"></div>
         </div>
     </div>
+    <div id="metaModal" class="modal hidden">
+    <div class="modal-content">
+        <h2 class="history-heading">Edit Box Information</h2>
+
+        <div class="modal-form">
+            <div class="filter-group">
+                <label>Select Box</label>
+                <select id="metaBox" onchange="fillMetaInputs()">
+                    <option value="">Select Box</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Box Name</label>
+                <input type="text" id="boxNameInput" placeholder="Enter box name">
+            </div>
+
+            <div class="filter-group">
+                <label>Device Name</label>
+                <input type="text" id="deviceNameInput" placeholder="Enter device name">
+            </div>
+        </div>
+
+        <div class="modal-buttons">
+            <button onclick="saveBoxMeta()" class="btn-primary">Save</button>
+            <button onclick="closeMetaModal()" class="btn-secondary">Cancel</button>
+        </div>
+    </div>
+</div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="script.js"></script>
