@@ -61,12 +61,13 @@
             </div>
 
         </div>
+
         <!--: LIVE TABLE -->
         <div class="table-section">
             <div class="table-header-actions">
                 <h2 class="summary-title">AI Box Live Status</h2>
                 <div class="filter-buttons">
-                    <button onclick="openMetaModal()" class="btn-primary">Edit</button>
+                    <button id="openMetaModalBtn" class="btn-primary">Edit</button>
                 </div>
             </div>
 
@@ -89,7 +90,6 @@
                             <th class="group-ai">AI Server</th>
                             <th class="group-ai">Last Update</th>
 
-
                             <th class="group-node">DEVICE NAME</th>
                             <th class="group-node">Node red Status</th>
                             <th class="group-node">Last Update</th>
@@ -104,9 +104,10 @@
             </div>
         </div>
     </div>
-    <div class="divider"></div>
-    <div class="filter-container">
 
+    <div class="divider"></div>
+
+    <div class="filter-container">
         <div class="filter-group">
             <label>Type</label>
             <select id="typeFilter">
@@ -132,6 +133,7 @@
             <label>To</label>
             <input type="datetime-local" id="toFilter">
         </div>
+
         <div class="filter-group">
             <label>Status</label>
             <select id="statusFilter">
@@ -142,12 +144,11 @@
         </div>
 
         <div class="filter-buttons">
-            <button onclick="applyFilter()" class="btn-primary">Apply</button>
-            <button onclick="resetFilter()" class="btn-secondary">Reset</button>
+            <button id="applyFilterBtn" class="btn-primary">Apply</button>
+            <button id="resetFilterBtn" class="btn-secondary">Reset</button>
         </div>
-
-
     </div>
+
     <div class="history-summary">
         <div class="card online-card">
             <h3 id="totalRowsTitle">Total </h3>
@@ -183,6 +184,7 @@
     </div>
 
     <div class="divider"></div>
+
     <div id="editModal" class="modal hidden">
         <div class="modal-content">
             <h2 class="history-heading">Edit Box Location</h2>
@@ -190,7 +192,7 @@
             <div class="modal-form">
                 <div class="filter-group">
                     <label>Select Box</label>
-                    <select id="locationBox" onchange="fillLocationInputs()">
+                    <select id="locationBox">
                         <option value="">Select Box</option>
                     </select>
                 </div>
@@ -207,30 +209,30 @@
             </div>
 
             <div class="modal-buttons">
-                <button type="button" onclick="openMapPickerModal()" class="btn-secondary">
+                <button type="button" id="openMapPickerBtn" class="btn-secondary">
                     Select Location Coordinates
                 </button>
-                <button onclick="saveLocation()" class="btn-primary">Save</button>
-                <button onclick="closeEditModal()" class="btn-secondary">Cancel</button>
+                <button id="saveLocationBtn" class="btn-primary">Save</button>
+                <button id="closeEditModalBtn" class="btn-secondary">Cancel</button>
             </div>
         </div>
     </div>
+
     <div class="location-editor">
-        <select id="searchBox" onchange="findBoxOnMap()">
+        <select id="searchBox">
             <option value="">Select Box</option>
         </select>
         <div class="filter-buttons">
-            <button onclick="openEditModal()" class="btn-primary">Edit</button>
+            <button id="openEditModalBtn" class="btn-primary">Edit</button>
         </div>
-
     </div>
 
     <div class="map-section">
-
         <div class="table-responsive">
             <div id="map" style="height: 450px; max-width: 1100px; margin: 20px auto; border-radius: 12px"></div>
         </div>
     </div>
+
     <div id="metaModal" class="modal hidden">
         <div class="modal-content">
             <h2 class="history-heading">Edit Box Information</h2>
@@ -238,7 +240,7 @@
             <div class="modal-form">
                 <div class="filter-group">
                     <label>Select Box</label>
-                    <select id="metaBox" onchange="fillMetaInputs()">
+                    <select id="metaBox">
                         <option value="">Select Box</option>
                     </select>
                 </div>
@@ -255,11 +257,12 @@
             </div>
 
             <div class="modal-buttons">
-                <button onclick="saveBoxMeta()" class="btn-primary">Save</button>
-                <button onclick="closeMetaModal()" class="btn-secondary">Cancel</button>
+                <button id="saveBoxMetaBtn" class="btn-primary">Save</button>
+                <button id="closeMetaModalBtn" class="btn-secondary">Cancel</button>
             </div>
         </div>
     </div>
+
     <div id="mapPickerModal" class="modal hidden">
         <div class="modal-content" style="max-width: 900px;">
             <h2 class="history-heading">Select Location Coordinates</h2>
@@ -267,14 +270,14 @@
             <div id="pickerMap" style="height: 420px; border-radius: 12px; margin-top: 16px;"></div>
 
             <div class="modal-buttons">
-                <button type="button" onclick="usePickedLocation()" class="btn-primary">Use This Location</button>
-                <button type="button" onclick="closeMapPickerModal()" class="btn-secondary">Cancel</button>
+                <button type="button" id="usePickedLocationBtn" class="btn-primary">Use This Location</button>
+                <button type="button" id="closeMapPickerModalBtn" class="btn-secondary">Cancel</button>
             </div>
         </div>
     </div>
+
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="script.js"></script>
-
 </body>
 
 </html>

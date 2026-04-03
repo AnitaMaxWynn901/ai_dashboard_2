@@ -5,9 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let pickerMap;
     let pickedLatLng = null;
     let pickedLocationMarker = null;
-    let boxLocationMap = {
-
-    };
+    let boxLocationMap = {};
     let boxMetaMap = {};
 
     let filterApplied = false;
@@ -19,15 +17,16 @@ document.addEventListener("DOMContentLoaded", () => {
         to: "",
         status: "all"
     };
+
     function openMapPickerModal() {
         document.getElementById("mapPickerModal").classList.remove("hidden");
 
         setTimeout(() => {
             if (!pickerMap) {
-                pickerMap = L.map('pickerMap').setView(map.getCenter(), map.getZoom());
+                pickerMap = L.map("pickerMap").setView(map.getCenter(), map.getZoom());
 
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; OpenStreetMap contributors'
+                L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                    attribution: "&copy; OpenStreetMap contributors"
                 }).addTo(pickerMap);
 
                 pickerMap.on("click", (e) => {
@@ -44,7 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 pickerMap.invalidateSize();
             }
 
-            // If current lat/lng already exist, show current point
             const lat = parseFloat(document.getElementById("latInput").value);
             const lng = parseFloat(document.getElementById("lngInput").value);
 
@@ -94,14 +92,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function initMap() {
-        map = L.map('map').setView([13.7563, 100.5018], 6);
+        map = L.map("map").setView([13.7563, 100.5018], 6);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "&copy; OpenStreetMap contributors"
         }).addTo(map);
-
-
     }
+
     async function saveBoxMeta() {
         const boxCode = document.getElementById("metaBox").value;
         const boxName = document.getElementById("boxNameInput").value.trim();
@@ -138,7 +135,9 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Save box meta failed:", err);
             alert("Failed to save box information.");
         }
-    } async function loadBoxMeta() {
+    }
+
+    async function loadBoxMeta() {
         try {
             const res = await fetch("/box-meta");
             const data = await res.json();
@@ -162,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await res.json();
 
             if (!Array.isArray(data) || data.length === 0) {
-                return; // keep existing fallback boxLocationMap
+                return;
             }
 
             boxLocationMap = {};
@@ -178,11 +177,13 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Failed to load locations:", err);
         }
     }
+
     function getMarkerColor(aiStatus, nodeStatus) {
         if (aiStatus === "online" && nodeStatus === "online") return "green";
         if (aiStatus === "offline" && nodeStatus === "offline") return "red";
         return "orange";
     }
+
     function updateMapMarkers(rows) {
         const bounds = [];
 
@@ -226,6 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
             hasFittedMap = true;
         }
     }
+
     function openEditModal() {
         const modal = document.getElementById("editModal");
         const selectedBox = document.getElementById("searchBox").value;
@@ -277,6 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         marker.openPopup();
     }
+
     function fillLocationInputs() {
         const boxCode = document.getElementById("locationBox").value;
         const location = boxLocationMap[boxCode];
@@ -284,6 +287,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("latInput").value = location ? location.lat : "";
         document.getElementById("lngInput").value = location ? location.lng : "";
     }
+
     function parseTS(ts) {
         const [d, t] = ts.split(" ");
         const [day, mon, yr] = d.split("/");
@@ -298,6 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (m) return `${m}m ${s % 60}s`;
         return `${s}s`;
     }
+
     function setDefaultFromDate() {
         const input = document.getElementById("fromFilter");
 
@@ -307,9 +312,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const mm = String(now.getMonth() + 1).padStart(2, "0");
         const dd = String(now.getDate()).padStart(2, "0");
 
-
         input.value = `${yyyy}-${mm}-${dd}T00:00`;
     }
+
     async function loadFilters() {
         try {
             const res = await fetch("/filters");
@@ -319,19 +324,17 @@ document.addEventListener("DOMContentLoaded", () => {
             const locationSelect = document.getElementById("locationBox");
             const searchSelect = document.getElementById("searchBox");
             const metaSelect = document.getElementById("metaBox");
+
             boxSelect.innerHTML = '<option value="">All Box Codes</option>';
             locationSelect.innerHTML = '<option value="">Select Box</option>';
             searchSelect.innerHTML = `
                 <option value="">Select Box</option>
-                 <option value="ALL">All Boxes</option>`;
+                <option value="ALL">All Boxes</option>`;
             metaSelect.innerHTML = '<option value="">Select Box</option>';
 
             data.boxCodes.forEach(code => {
                 if (code) {
-
                     const displayName = boxMetaMap[code]?.boxName || code;
-
-
 
                     boxSelect.innerHTML += `
                     <option value="${code}">
@@ -344,6 +347,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         ${displayName}
                     </option>
                 `;
+
                     searchSelect.innerHTML += `
                     <option value="${code}">
                         ${displayName}
@@ -353,25 +357,22 @@ document.addEventListener("DOMContentLoaded", () => {
                     metaSelect.innerHTML += `
                     <option value="${code}">
                        ${displayName}
-                     </option>`;
+                    </option>`;
                 }
-
             });
 
         } catch (err) {
             console.error("Failed to load filters:", err);
         }
     }
+
     async function loadLogs(showAll = false) {
-
-
         const { type, boxCode, from, to, status } = appliedFilters;
 
         const res = await fetch(
             `/logs?type=${type}&boxCode=${boxCode}&from=${from}&to=${to}&status=${status}`
         );
         let logs = await res.json();
-
 
         logs = logs.sort((a, b) =>
             new Date(b.timestamp) - new Date(a.timestamp)
@@ -399,7 +400,6 @@ document.addEventListener("DOMContentLoaded", () => {
         let totalOfflineMs = 0;
 
         for (let i = 0; i < logs.length; i++) {
-
             const current = logs[i];
             const selectedStatus = appliedFilters.status;
 
@@ -409,11 +409,9 @@ document.addEventListener("DOMContentLoaded", () => {
             ) {
                 continue;
             }
+
             const currentTime = normalize(current.timestamp)?.getTime();
-
             let duration = "-";
-
-
 
             if (currentTime) {
                 let nextTime = null;
@@ -438,7 +436,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     duration = formatDuration(durationMs);
                 }
 
-
                 if (current.online_status === "online") {
                     totalOnlineMs += durationMs;
                 } else if (current.online_status === "offline") {
@@ -449,63 +446,55 @@ document.addEventListener("DOMContentLoaded", () => {
             html += `
     <tr>
       <td>${boxMetaMap[current.boxCode]?.boxName || current.boxCode}</td>
-        <td>${current.source}</td>
-        <td class="${current.online_status}">
-            ${current.online_status}
-        </td>
-        <td>${current.timestamp}</td>
-        <td>${duration}</td>
+      <td>${current.source}</td>
+      <td class="${current.online_status}">
+          ${current.online_status}
+      </td>
+      <td>${current.timestamp}</td>
+      <td>${duration}</td>
     </tr>`;
         }
-        // Count rows shown in table
-        const totalRows = html ? html.split("<tr>").length - 1 : 0;
 
-        //  Sum ALL durations (online + offline)
+        const totalRows = html ? html.split("<tr>").length - 1 : 0;
         const totalDurationMs = totalOnlineMs + totalOfflineMs;
 
-        //  Update cards
         document.getElementById("totalRows").innerText = totalRows;
         document.getElementById("totalDuration").innerText = formatDuration(totalDurationMs);
         document.getElementById("logTable").innerHTML = html;
         document.getElementById("logTable").innerHTML = html;
+
         const title = document.getElementById("totalRowsTitle");
 
         if (appliedFilters.status === "online") {
             title.innerText = "Total Online";
             title.style.color = "#16a34a";
-            // value.style.color = "#16a34a";
         } else if (appliedFilters.status === "offline") {
             title.innerText = "Total Offline";
             title.style.color = "#dc2626";
-            // value.style.color = "#dc2626";
         } else {
             title.innerText = "Total";
             title.style.color = "";
-            // value.style.color = "";
         }
     }
 
-
     async function loadLiveStatus() {
-
         try {
             const res = await fetch("/boxes");
             const data = await res.json();
 
-            // Safe fallback
             const rows = data.boxes || [];
             updateMapMarkers(rows);
+
             const summary = data.summary || {
                 ai: { total: 0, online: 0, offline: 0 },
                 node: { total: 0, online: 0, offline: 0 }
             };
 
-            // ================= LIVE TABLE ================= //
             document.getElementById("liveTable").innerHTML =
                 rows.map((row, i) => `
                 <tr>
                     <td>${i + 1}</td>
-                  <td>${boxMetaMap[row.site]?.boxName || row.site}</td>
+                    <td>${boxMetaMap[row.site]?.boxName || row.site}</td>
 
                     <td class="${row.aiBoxStatus || "offline"}">
                         ${row.aiBoxStatus || "offline"}
@@ -522,7 +511,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     </td>
                     <td>${row.aiServerLast || "-"}</td>
                 
-                   <td>${boxMetaMap[row.site]?.deviceName || row.deviceName || "-"}</td>
+                    <td>${boxMetaMap[row.site]?.deviceName || row.deviceName || "-"}</td>
 
                     <td class="${row.nodeStatus || "offline"}">
                         ${row.nodeStatus || "offline"}
@@ -531,30 +520,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 </tr>
             `).join("");
 
-            // ================= SUMMARY CARDS =================//
-
-            document.getElementById("aiTotalHB").innerText =
-                summary.ai.total;
-
-            document.getElementById("aiOnlineDuration").innerText =
-                summary.ai.online;
-
-            document.getElementById("aiOfflineDuration").innerText =
-                summary.ai.offline;
-
-            document.getElementById("nodeTotalHB").innerText =
-                summary.node.total;
-
-            document.getElementById("nodeOnlineDuration").innerText =
-                summary.node.online;
-
-            document.getElementById("nodeOfflineDuration").innerText =
-                summary.node.offline;
+            document.getElementById("aiTotalHB").innerText = summary.ai.total;
+            document.getElementById("aiOnlineDuration").innerText = summary.ai.online;
+            document.getElementById("aiOfflineDuration").innerText = summary.ai.offline;
+            document.getElementById("nodeTotalHB").innerText = summary.node.total;
+            document.getElementById("nodeOnlineDuration").innerText = summary.node.online;
+            document.getElementById("nodeOfflineDuration").innerText = summary.node.offline;
 
         } catch (err) {
             console.error("Live status load failed:", err);
         }
     }
+
     async function saveLocation() {
         const boxCode = document.getElementById("locationBox").value;
         const lat = parseFloat(document.getElementById("latInput").value);
@@ -579,6 +556,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!res.ok) {
                 throw new Error(result.error || "Failed to save location");
             }
+
             alert("Location saved successfully.");
             closeEditModal();
 
@@ -586,6 +564,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             await loadLocations();
             await loadLiveStatus();
+
             const marker = markers[boxCode];
             if (marker) {
                 map.flyTo(marker.getLatLng(), 16, {
@@ -605,7 +584,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function applyFilter() {
-
         appliedFilters.type = document.getElementById("typeFilter").value;
         appliedFilters.boxCode = document.getElementById("boxCodeFilter").value;
         appliedFilters.from = document.getElementById("fromFilter").value;
@@ -627,8 +605,8 @@ document.addEventListener("DOMContentLoaded", () => {
             loadLogs(true);
         }
     }
-    function resetFilter() {
 
+    function resetFilter() {
         filterApplied = false;
 
         appliedFilters = {
@@ -646,9 +624,10 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("statusFilter").value = "all";
 
         setDefaultFromDate();
-
         loadLogs(false);
     }
+
+    // Initial load
     loadBoxMeta().then(() => {
         loadFilters();
         initMap();
@@ -656,7 +635,7 @@ document.addEventListener("DOMContentLoaded", () => {
             loadLiveStatus();
         });
     });
-    // Delay to override browser restore
+
     setTimeout(() => {
         const fromInput = document.getElementById("fromFilter");
         fromInput.value = "";
@@ -665,32 +644,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadLogs(false);
 
+    // Event listeners replacing inline handlers + window usage
+    document.getElementById("openMetaModalBtn").addEventListener("click", openMetaModal);
+    document.getElementById("applyFilterBtn").addEventListener("click", applyFilter);
+    document.getElementById("resetFilterBtn").addEventListener("click", resetFilter);
+    document.getElementById("locationBox").addEventListener("change", fillLocationInputs);
+    document.getElementById("openMapPickerBtn").addEventListener("click", openMapPickerModal);
+    document.getElementById("saveLocationBtn").addEventListener("click", saveLocation);
+    document.getElementById("closeEditModalBtn").addEventListener("click", closeEditModal);
+    document.getElementById("searchBox").addEventListener("change", findBoxOnMap);
+    document.getElementById("openEditModalBtn").addEventListener("click", openEditModal);
+    document.getElementById("metaBox").addEventListener("change", fillMetaInputs);
+    document.getElementById("saveBoxMetaBtn").addEventListener("click", saveBoxMeta);
+    document.getElementById("closeMetaModalBtn").addEventListener("click", closeMetaModal);
+    document.getElementById("usePickedLocationBtn").addEventListener("click", usePickedLocation);
+    document.getElementById("closeMapPickerModalBtn").addEventListener("click", closeMapPickerModal);
+
     // Auto Refresh
     setInterval(() => {
-
         loadLocations().then(() => {
             loadLiveStatus();
         });
 
         if (filterApplied) {
-            loadLogs(true);   // keep showing filtered data
+            loadLogs(true);
         } else {
-            loadLogs(false);  // show latest 5 logs
+            loadLogs(false);
         }
-
     }, 5000);
-    window.applyFilter = applyFilter;
-    window.resetFilter = resetFilter;
-    window.saveLocation = saveLocation;
-    window.findBoxOnMap = findBoxOnMap;
-    window.fillLocationInputs = fillLocationInputs;
-    window.openEditModal = openEditModal;
-    window.closeEditModal = closeEditModal;
-    window.openMetaModal = openMetaModal;
-    window.closeMetaModal = closeMetaModal;
-    window.fillMetaInputs = fillMetaInputs;
-    window.saveBoxMeta = saveBoxMeta;
-    window.openMapPickerModal = openMapPickerModal;
-    window.closeMapPickerModal = closeMapPickerModal;
-    window.usePickedLocation = usePickedLocation;
 });
