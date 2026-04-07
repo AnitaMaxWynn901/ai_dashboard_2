@@ -11,20 +11,32 @@
 
 <body>
     <div class="topbar">
+ 
+  
+    <div class="topbar-left"></div>
+ 
+    <!-- Center title -->
     <div class="topbar-center">
+        <div class="topbar-dot"></div>
         <h1>AI Box Dashboard</h1>
     </div>
-
-    <div class="topbar-right-box">
-        <div class="topbar-user-line">
-            <span id="currentUsername" class="user-info">admin</span>
-        </div>
-
-        <div class="topbar-button-row">
-            <button id="openCreateUserBtn" class="btn-primary" style="display:none;">Create User</button>
-            <button id="logoutBtn" class="btn-secondary">Logout</button>
-        </div>
+ 
+    <!-- Right controls -->
+    <div class="topbar-right">
+        <div class="topbar-avatar" id="userAvatar">AD</div>
+        <span class="topbar-username" id="currentUsername">admin</span>
+ 
+        <button class="btn-create visible" id="openCreateUserBtn">Create User</button>
+ 
+        <button class="btn-logout" id="logoutBtn" title="Logout">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M10 11l3-3-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M13 8H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+        </button>
     </div>
+ 
 </div>
     <div class="dashboard-container">
         <div class="summary-section">

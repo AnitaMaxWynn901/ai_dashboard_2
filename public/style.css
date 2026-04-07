@@ -576,55 +576,133 @@ tr.offline-row:hover {
   box-shadow: 0 0 0 3px rgba(239,68,68,0.15);
 }
 /* ================= USER MODAL ================= */
-.topbar {
-    position: relative;
-    width: 100%;
-    padding: 24px 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.topbar-center h1 {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 700;
-    color: #1f2937;
-}
-
-.topbar-right-box {
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 10px;
-
-    background: #ffffff;
-    padding: 14px 18px;
-    border-radius: 14px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-}
-
-.topbar-user-line {
-    width: 100%;
-    text-align: right;
-}
-
-.user-info {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1f2937;
-}
-
-.topbar-button-row {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-}
+ /* ===== TOPBAR ===== */
+        .topbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 54px;
+            background: #ffffff;
+            border-bottom: 1px solid #dde3ed;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+ 
+        /* Left spacer — mirrors right side width so title stays truly centered */
+        .topbar-left {
+            flex: 1;
+        }
+ 
+        /* Center — absolutely centered title */
+        .topbar-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+ 
+        .topbar-center h1 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a2a3a;
+            letter-spacing: 0.1px;
+        }
+ 
+        .topbar-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4a90d9;
+            flex-shrink: 0;
+        }
+ 
+        /* Right controls */
+        .topbar-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+ 
+        /* Avatar circle */
+        .topbar-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #4a5568;
+            flex-shrink: 0;
+            border: 1px solid #cbd5e0;
+        }
+ 
+        /* Username */
+        .topbar-username {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a2a3a;
+        }
+ 
+        /* Create User button */
+        .btn-create {
+            padding: 6px 14px;
+            background: #ffffff;
+            border: 1px solid #c4cdd8;
+            border-radius: 7px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1a2a3a;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+            display: none; /* shown only for admin — toggle via JS */
+        }
+ 
+        .btn-create:hover {
+            background: #f4f7fb;
+            border-color: #a0aab8;
+        }
+ 
+        .btn-create.visible {
+            display: inline-flex;
+            align-items: center;
+        }
+ 
+        /* Logout icon button */
+        .btn-logout {
+            width: 32px;
+            height: 32px;
+            background: #ffffff;
+            border: 1px solid #c4cdd8;
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+            flex-shrink: 0;
+        }
+ 
+        .btn-logout:hover {
+            background: #f4f7fb;
+            border-color: #a0aab8;
+        }
+ 
+        .btn-logout svg {
+            width: 15px;
+            height: 15px;
+            color: #4a5568;
+        }
 @keyframes pulse {
   0%, 100% { opacity: 1; box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
   50%       { opacity: 0.7; box-shadow: 0 0 0 6px rgba(34,197,94,0.08); }
