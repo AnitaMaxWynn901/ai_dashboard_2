@@ -577,132 +577,67 @@ tr.offline-row:hover {
 }
 /* ================= USER MODAL ================= */
  /* ===== TOPBAR ===== */
-        .topbar {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            height: 54px;
-            background: #ffffff;
-            border-bottom: 1px solid #dde3ed;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-            z-index: 100;
-        }
- 
-        /* Left spacer — mirrors right side width so title stays truly centered */
-        .topbar-left {
-            flex: 1;
-        }
- 
-        /* Center — absolutely centered title */
-        .topbar-center {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
- 
-        .topbar-center h1 {
-            font-size: 15px;
-            font-weight: 600;
-            color: #1a2a3a;
-            letter-spacing: 0.1px;
-        }
- 
-        .topbar-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #4a90d9;
-            flex-shrink: 0;
-        }
- 
-        /* Right controls */
-        .topbar-right {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 8px;
-        }
- 
-        /* Avatar circle */
-        .topbar-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 600;
-            color: #4a5568;
-            flex-shrink: 0;
-            border: 1px solid #cbd5e0;
-        }
- 
-        /* Username */
-        .topbar-username {
-            font-size: 14px;
-            font-weight: 500;
-            color: #1a2a3a;
-        }
- 
-        /* Create User button */
-        .btn-create {
-            padding: 6px 14px;
-            background: #ffffff;
-            border: 1px solid #c4cdd8;
-            border-radius: 7px;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            font-weight: 500;
-            color: #1a2a3a;
-            cursor: pointer;
-            transition: background 0.15s, border-color 0.15s;
-            display: none; /* shown only for admin — toggle via JS */
-        }
- 
-        .btn-create:hover {
-            background: #f4f7fb;
-            border-color: #a0aab8;
-        }
- 
-        .btn-create.visible {
-            display: inline-flex;
-            align-items: center;
-        }
- 
-        /* Logout icon button */
-        .btn-logout {
-            width: 32px;
-            height: 32px;
-            background: #ffffff;
-            border: 1px solid #c4cdd8;
-            border-radius: 7px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background 0.15s, border-color 0.15s;
-            flex-shrink: 0;
-        }
- 
-        .btn-logout:hover {
-            background: #f4f7fb;
-            border-color: #a0aab8;
-        }
- 
-        .btn-logout svg {
-            width: 15px;
-            height: 15px;
-            color: #4a5568;
-        }
+   /* Give page content space below fixed topbar */
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(59,130,246,0.08), transparent);
+  padding: 86px 28px 64px;   /* was 32px 28px 64px */
+  color: var(--text-1);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Reset h1 only inside topbar */
+.topbar-center h1 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a2a3a;
+  letter-spacing: 0.1px;
+  display: block;
+  line-height: 1;
+}
+
+/* Remove the global decorative dot before navbar title */
+.topbar-center h1::before {
+  content: none;
+}
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px; /* slightly taller */
+  background: #ffffff;
+  border-bottom: 1px solid #dde3ed;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  z-index: 1000;
+}
+
+.topbar-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.topbar-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+}
 @keyframes pulse {
   0%, 100% { opacity: 1; box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
   50%       { opacity: 0.7; box-shadow: 0 0 0 6px rgba(34,197,94,0.08); }
