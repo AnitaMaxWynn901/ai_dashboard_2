@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const session = require("express-session");
-const MongoStore = require("connect-mongo");
+const MongoStore = require("connect-mongo").default;
 const bcrypt = require("bcrypt");
 
 const app = express();
@@ -18,15 +18,15 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
+  store: new MongoStore({
     mongoUrl: process.env.MONGO_URI,
     collectionName: "sessions"
   }),
   cookie: {
     httpOnly: true,
-    secure: false, // change to true behind HTTPS in production
+    secure: true,   
     sameSite: "lax",
-    maxAge: 1000 * 60 * 60 * 8 // 8 hours
+    maxAge: 1000 * 60 * 60 * 8
   }
 }));
 function requireAuth(req, res, next) {
