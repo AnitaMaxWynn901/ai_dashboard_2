@@ -11,33 +11,35 @@
 
 <body>
     <div class="topbar">
- 
-  
-    <div class="topbar-left"></div>
- 
-    <!-- Center title -->
-    <div class="topbar-center">
-        <div class="topbar-dot"></div>
-        <h1>AI Box Dashboard</h1>
+
+
+        <div class="topbar-left"></div>
+
+        <!-- Center title -->
+        <div class="topbar-center">
+            <div class="topbar-dot"></div>
+            <h1>AI Box Dashboard</h1>
+        </div>
+
+        <!-- Right controls -->
+        <div class="topbar-right">
+            <!-- <div class="topbar-avatar" id="userAvatar">AD</div> -->
+            <span class="topbar-username" id="currentUsername">admin</span>
+
+            <button class="btn-create visible" id="openCreateUserBtn">Create User</button>
+
+            <button class="btn-logout" id="logoutBtn" title="Logout">
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" />
+                    <path d="M10 11l3-3-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M13 8H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+            </button>
+        </div>
+
     </div>
- 
-    <!-- Right controls -->
-    <div class="topbar-right">
-        <div class="topbar-avatar" id="userAvatar">AD</div>
-        <span class="topbar-username" id="currentUsername">admin</span>
- 
-        <button class="btn-create visible" id="openCreateUserBtn">Create User</button>
- 
-        <button class="btn-logout" id="logoutBtn" title="Logout">
-            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                <path d="M10 11l3-3-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M13 8H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-        </button>
-    </div>
- 
-</div>
     <div class="dashboard-container">
         <div class="summary-section">
 
@@ -255,25 +257,25 @@
     </div>
 
     <div class="map-section">
-    <div class="table-responsive">
-        <div id="map" style="height: 450px; max-width: 1100px; margin: 20px auto 12px; border-radius: 12px"></div>
-    </div>
+        <div class="table-responsive">
+            <div id="map" style="height: 450px; max-width: 1100px; margin: 20px auto 12px; border-radius: 12px"></div>
+        </div>
 
-    <div class="map-legend">
-        <div class="legend-item">
-            <span class="legend-dot legend-red"></span>
-            <span>Both offline</span>
-        </div>
-        <div class="legend-item">
-            <span class="legend-dot legend-orange"></span>
-            <span>One offline</span>
-        </div>
-        <div class="legend-item">
-            <span class="legend-dot legend-green"></span>
-            <span>Both online</span>
+        <div class="map-legend">
+            <div class="legend-item">
+                <span class="legend-dot legend-red"></span>
+                <span>Both offline</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot legend-orange"></span>
+                <span>One offline</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot legend-green"></span>
+                <span>Both online</span>
+            </div>
         </div>
     </div>
-</div>
 
     <div id="metaModal" class="modal hidden">
         <div class="modal-content">
@@ -317,39 +319,45 @@
             </div>
         </div>
     </div>
-<!-- create user modal -->
+    <!-- create user modal -->
     <div id="createUserModal" class="modal hidden">
-    <div class="modal-content">
-        <h2 class="history-heading">Create User Account</h2>
+        <div class="modal-content">
+            <h2 class="history-heading">Create User Account</h2>
 
-        <div class="modal-form">
-            <div class="filter-group">
-                <label>Username</label>
-                <input type="text" id="newUsernameInput" placeholder="Enter username">
+            <div class="modal-form">
+                <div class="filter-group">
+                    <label>Username</label>
+                    <input type="text" id="newUsernameInput" placeholder="Enter username">
+                </div>
+
+                <div class="filter-group">
+                    <label>Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="newPasswordInput" placeholder="Enter password">
+
+                        <button type="button" id="togglePassword" class="toggle-password">
+                            👁
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Role</label>
+                    <select id="newRoleInput">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="filter-group">
-                <label>Password</label>
-                <input type="password" id="newPasswordInput" placeholder="Enter password">
+            <div class="modal-buttons">
+                <button id="saveNewUserBtn" class="btn-primary">Create</button>
+                <button id="closeCreateUserModalBtn" class="btn-secondary">Cancel</button>
             </div>
 
-            <div class="filter-group">
-                <label>Role</label>
-                <select id="newRoleInput">
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                </select>
-            </div>
+            <p id="createUserMessage" style="margin-top:12px;"></p>
         </div>
-
-        <div class="modal-buttons">
-            <button id="saveNewUserBtn" class="btn-primary">Create</button>
-            <button id="closeCreateUserModalBtn" class="btn-secondary">Cancel</button>
-        </div>
-
-        <p id="createUserMessage" style="margin-top:12px;"></p>
     </div>
-</div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="script.js"></script>
