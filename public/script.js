@@ -93,21 +93,21 @@ document.addEventListener("DOMContentLoaded", () => {
             msg.innerText = "Network error";
         }
     }
-  document.querySelectorAll(".password-field").forEach(field => {
-        const input = field.querySelector(".password-input");
-        const toggle = field.querySelector(".password-toggle");
-        const eyeOpen = field.querySelector(".eye-open");
-        const eyeOff = field.querySelector(".eye-off");
+document.querySelectorAll(".password-field").forEach(field => {
+    const input = field.querySelector(".password-input");
+    const toggle = field.querySelector(".password-toggle");
+    const eyeOpen = field.querySelector(".eye-open");
+    const eyeOff = field.querySelector(".eye-off");
 
-        toggle.addEventListener("click", () => {
-            const isHidden = input.type === "password";
+    if (!input || !toggle || !eyeOpen || !eyeOff) return;
 
-            input.type = isHidden ? "text" : "password";
-
-            eyeOpen.style.display = isHidden ? "none" : "block";
-            eyeOff.style.display = isHidden ? "block" : "none";
-        });
-         });
+    toggle.addEventListener("click", () => {
+        const isHidden = input.type === "password";
+        input.type = isHidden ? "text" : "password";
+        eyeOpen.style.display = isHidden ? "none" : "block";
+        eyeOff.style.display = isHidden ? "block" : "none";
+    });
+});
 
     function openMapPickerModal() {
         document.getElementById("mapPickerModal").classList.remove("hidden");

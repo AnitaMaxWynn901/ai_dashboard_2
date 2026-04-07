@@ -329,25 +329,33 @@
                     <label>Username</label>
                     <input type="text" id="newUsernameInput" placeholder="Enter username">
                 </div>
-<div class="password-field">
-    <input type="password" class="password-input" placeholder="Enter password">
+<div class="filter-group">
+    <label>Password</label>
 
-    <button type="button" class="password-toggle">
-        <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
-            <circle cx="12" cy="12" r="3"/>
-        </svg>
+    <div class="password-field">
+        <input
+            type="password"
+            id="newPasswordInput"
+            class="password-input"
+            placeholder="Enter password"
+        >
 
-        <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
-            <path d="M1 1l22 22"/>
-        </svg>
-    </button>
+        <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+            <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+
+            <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+                <path d="M2 2l20 20"/>
+                <path d="M10.58 10.58A2 2 0 0 0 12 14a2 2 0 0 0 1.42-.58"/>
+                <path d="M9.88 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.8 21.8 0 0 1-5.08 5.94"/>
+                <path d="M6.1 6.1A21.78 21.78 0 0 0 1 12s4 8 11 8a10.94 10.94 0 0 0 5.02-1.21"/>
+            </svg>
+        </button>
+    </div>
 </div>
-
-    <label class="show-password-check">
-        <input type="checkbox" id="showPasswordCheckbox">
-        <span>Show password</span>
-    </label>
+   
 </div>
 
                 <div class="filter-group">

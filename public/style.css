@@ -798,14 +798,13 @@ background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.18s ease;
+  transition: color 0.18s ease;
 }
 
 .password-toggle:hover {
-  background: #eef2ff;
+  background: transparent;
   color: #3b82f6;
 }
-
 .password-toggle svg {
   width: 18px;
   height: 18px;
