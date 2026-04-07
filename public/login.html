@@ -430,23 +430,23 @@
                 loginBtn.disabled = false;
             }
         }
+document.querySelectorAll(".password-field").forEach(field => {
+    const input = field.querySelector(".password-input");
+    const toggle = field.querySelector(".password-toggle");
+    const eyeOpen = field.querySelector(".eye-open");
+    const eyeOff = field.querySelector(".eye-off");
 
+    toggle.addEventListener("click", () => {
+        const isHidden = input.type === "password";
 
-        function updatePasswordVisibility(show) {
-            passwordInput.type = show ? "text" : "password";
-            eyeOpen.style.display = show ? "none" : "block";
-            eyeOff.style.display = show ? "block" : "none";
-            showPasswordCheckbox.checked = show;
-        }
+        input.type = isHidden ? "text" : "password";
 
-        togglePasswordBtn.addEventListener("click", () => {
-            updatePasswordVisibility(passwordInput.type === "password");
-        });
+        eyeOpen.style.display = isHidden ? "none" : "block";
+        eyeOff.style.display = isHidden ? "block" : "none";
+    });
+});
 
-        showPasswordCheckbox.addEventListener("change", () => {
-            updatePasswordVisibility(showPasswordCheckbox.checked);
-        });
-
+       
         loginBtn.addEventListener("click", doLogin);
         document.addEventListener("keydown", (e) => { if (e.key === "Enter") doLogin(); });
     </script>

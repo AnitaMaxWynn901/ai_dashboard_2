@@ -93,29 +93,21 @@ document.addEventListener("DOMContentLoaded", () => {
             msg.innerText = "Network error";
         }
     }
-    const passwordInput = document.getElementById("newPasswordInput");
-const togglePasswordBtn = document.getElementById("togglePassword");
-const showPasswordCheckbox = document.getElementById("showPasswordCheckbox");
-const eyeOpen = document.getElementById("eyeOpen");
-const eyeOff = document.getElementById("eyeOff");
+  document.querySelectorAll(".password-field").forEach(field => {
+        const input = field.querySelector(".password-input");
+        const toggle = field.querySelector(".password-toggle");
+        const eyeOpen = field.querySelector(".eye-open");
+        const eyeOff = field.querySelector(".eye-off");
 
-function updatePasswordVisibility(show) {
-    passwordInput.type = show ? "text" : "password";
-    eyeOpen.style.display = show ? "none" : "block";
-    eyeOff.style.display = show ? "block" : "none";
-    if (showPasswordCheckbox) {
-        showPasswordCheckbox.checked = show;
-    }
-}
+        toggle.addEventListener("click", () => {
+            const isHidden = input.type === "password";
 
-togglePasswordBtn.addEventListener("click", () => {
-    const isHidden = passwordInput.type === "password";
-    updatePasswordVisibility(isHidden);
-});
+            input.type = isHidden ? "text" : "password";
 
-showPasswordCheckbox.addEventListener("change", () => {
-    updatePasswordVisibility(showPasswordCheckbox.checked);
-});
+            eyeOpen.style.display = isHidden ? "none" : "block";
+            eyeOff.style.display = isHidden ? "block" : "none";
+        });
+         });
 
     function openMapPickerModal() {
         document.getElementById("mapPickerModal").classList.remove("hidden");
