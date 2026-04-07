@@ -12,7 +12,12 @@ const PORT = process.env.PORT || 3000;
 const User = require("./models/User");
 const HEARTBEAT_TIMEOUT = 4 * 60 * 1000;
 // login 
-
+function requirePageAuth(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect("/login.html");
+  }
+  next();
+}
 app.use(session({
   name: "ai_dashboard.sid",
   secret: process.env.SESSION_SECRET,
@@ -646,7 +651,11 @@ async function startOfflineChecker() {
 /* =================================================
    START SERVER
 ================================================= */
+app.use(express.static("public", { index: false }));
 
+app.get("/", requirePageAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 app.use(express.static("public"));
 
 mongoose.connect(process.env.MONGO_URI)
