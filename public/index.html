@@ -330,16 +330,32 @@
                     <input type="text" id="newUsernameInput" placeholder="Enter username">
                 </div>
 
-                <div class="filter-group">
-                    <label>Password</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="newPasswordInput" placeholder="Enter password">
+       <div class="filter-group">
+    <label>Password</label>
 
-                        <button type="button" id="togglePassword" class="toggle-password">
-                            👁
-                        </button>
-                    </div>
-                </div>
+    <div class="password-field">
+        <input type="password" id="newPasswordInput" placeholder="Enter password">
+
+        <button type="button" id="togglePassword" class="password-toggle" aria-label="Show password">
+            <svg id="eyeOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+
+            <svg id="eyeOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+                <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19C5 19 1 12 1 12a21.77 21.77 0 0 1 5.06-6.94"/>
+                <path d="M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.91 21.91 0 0 1-2.16 3.19"/>
+                <path d="M1 1l22 22"/>
+                <path d="M10.58 10.58A2 2 0 0 0 12 14a2 2 0 0 0 1.42-.58"/>
+            </svg>
+        </button>
+    </div>
+
+    <label class="show-password-check">
+        <input type="checkbox" id="showPasswordCheckbox">
+        <span>Show password</span>
+    </label>
+</div>
 
                 <div class="filter-group">
                     <label>Role</label>

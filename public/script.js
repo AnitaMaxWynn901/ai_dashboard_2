@@ -93,6 +93,29 @@ document.addEventListener("DOMContentLoaded", () => {
             msg.innerText = "Network error";
         }
     }
+    const passwordInput = document.getElementById("newPasswordInput");
+const togglePasswordBtn = document.getElementById("togglePassword");
+const showPasswordCheckbox = document.getElementById("showPasswordCheckbox");
+const eyeOpen = document.getElementById("eyeOpen");
+const eyeOff = document.getElementById("eyeOff");
+
+function updatePasswordVisibility(show) {
+    passwordInput.type = show ? "text" : "password";
+    eyeOpen.style.display = show ? "none" : "block";
+    eyeOff.style.display = show ? "block" : "none";
+    if (showPasswordCheckbox) {
+        showPasswordCheckbox.checked = show;
+    }
+}
+
+togglePasswordBtn.addEventListener("click", () => {
+    const isHidden = passwordInput.type === "password";
+    updatePasswordVisibility(isHidden);
+});
+
+showPasswordCheckbox.addEventListener("change", () => {
+    updatePasswordVisibility(showPasswordCheckbox.checked);
+});
 
     function openMapPickerModal() {
         document.getElementById("mapPickerModal").classList.remove("hidden");
