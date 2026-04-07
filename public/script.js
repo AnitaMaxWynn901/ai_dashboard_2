@@ -714,12 +714,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!currentUser) return;
 
         document.getElementById("currentUsername").innerText = currentUser.username;
-        document.getElementById("currentRole").innerText = currentUser.role;
-
-        const roleBadge = document.getElementById("currentRole");
-        roleBadge.classList.remove("role-admin", "role-user");
-        roleBadge.classList.add(currentUser.role === "admin" ? "role-admin" : "role-user");
-
+       
         const role = (currentUser.role || "").trim().toLowerCase();
 
         if (role !== "admin") {
