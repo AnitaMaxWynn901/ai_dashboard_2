@@ -577,7 +577,7 @@ tr.offline-row:hover {
 }
 /* ================= USER MODAL ================= */
  /* ===== TOPBAR ===== */
-/* ===== TOPBAR ===== */
+
 .topbar {
   position: fixed;
   top: 0;
@@ -674,13 +674,13 @@ body {
 
 .btn-create {
   padding: 10px 18px;
-  background: #ffffff;
+  background: linear-gradient(135deg, var(--blue-2), var(--blue-1));
   border: 1px solid #d1d5db;
   border-radius: 12px;
   font-family: 'Inter', sans-serif;
   font-size: 15px;
   font-weight: 500;
-  color: #374151;
+  color: #222933;
   cursor: pointer;
   transition: all 0.18s ease;
   display: none;
@@ -732,10 +732,10 @@ body {
     box-shadow: 0 0 0 8px rgba(96, 165, 250, 0.08);
   }
 }
-@keyframes pulse {
+/* @keyframes pulse {
   0%, 100% { opacity: 1; box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
   50%       { opacity: 0.7; box-shadow: 0 0 0 6px rgba(34,197,94,0.08); }
-}
+} */
 
 /* ================= SECTION HEADER ================= */
 .section-header {
