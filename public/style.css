@@ -576,48 +576,60 @@ tr.offline-row:hover {
   box-shadow: 0 0 0 3px rgba(239,68,68,0.15);
 }
 /* ================= USER MODAL ================= */
-
 .topbar {
-    max-width: 1100px;
-    margin: 20px auto;
-    padding: 16px 20px;
+    position: relative;
+    width: 100%;
+    padding: 20px 0;
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* center title */
     align-items: center;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
-.topbar-left h1 {
+/* CENTER TITLE */
+.topbar-center h1 {
     margin: 0;
     font-size: 28px;
+    font-weight: 700;
 }
 
-.topbar-right {
+/* RIGHT BOX */
+.topbar-right-box {
+    position: absolute;
+    right: 20px;   /* move to top right */
+    top: 50%;
+    transform: translateY(-50%);
+
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+
+    background: #ffffff;
+    padding: 10px 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
+/* USER NAME */
 .user-info {
     font-weight: 600;
     color: #1f2937;
 }
 
+/* ROLE BADGE */
 .role-badge {
     padding: 6px 10px;
     border-radius: 999px;
-    background: #e5e7eb;
     font-size: 14px;
     font-weight: 600;
 }
 
+/* ADMIN STYLE */
 .role-admin {
     background: #dbeafe;
     color: #1d4ed8;
 }
 
+/* USER STYLE */
 .role-user {
     background: #ecfdf5;
     color: #047857;
