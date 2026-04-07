@@ -51,6 +51,13 @@ app.use(session({
     maxAge: 1000 * 60 * 60 * 8
   }
 }));
+function requirePageAuth(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect("/login.html");
+  }
+  next();
+}
+
 function requireAuth(req, res, next) {
   if (!req.session.user) {
     return res.status(401).json({ error: "Unauthorized" });
