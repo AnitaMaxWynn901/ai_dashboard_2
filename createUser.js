@@ -7,7 +7,7 @@ const User = require("./models/User");
 async function createUsers() {
     await mongoose.connect(process.env.MONGO_URI);
 
-    const password = "123456"; // change later
+    const password = "admin123"; // change later
 
     const hash = await bcrypt.hash(password, 10);
 
