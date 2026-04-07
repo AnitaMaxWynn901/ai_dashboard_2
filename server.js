@@ -4,6 +4,7 @@ require("dotenv").config();
 const session = require("express-session");
 const MongoStore = require("connect-mongo").default;
 const bcrypt = require("bcrypt");
+const path = require("path");
 
 const app = express();
 app.use(express.json());
@@ -12,14 +13,28 @@ const PORT = process.env.PORT || 3000;
 const User = require("./models/User");
 const HEARTBEAT_TIMEOUT = 4 * 60 * 1000;
  /* ================= LOGIN ================= */
-app.set("trust proxy", 1);
-//middleware to protect pages
-function requirePageAuth(req, res, next) {
-  if (!req.session.user) {
-    return res.redirect("/login.html");
-  }
-  next();
+const isProduction = process.env.NODE_ENV === "production";
+
+if (isProduction) {
+  app.set("trust proxy", 1);
 }
+
+app.use(session({
+  name: "ai_dashboard.sid",
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  store: new MongoStore({
+    mongoUrl: process.env.MONGO_URI,
+    collectionName: "sessions"
+  }),
+  cookie: {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 8
+  }
+}));
 app.use(session({
   name: "ai_dashboard.sid",
   secret: process.env.SESSION_SECRET,
@@ -92,6 +107,41 @@ app.post("/login", async (req, res) => {
     res.status(500).json({ error: "Login failed" });
   }
 });
+//create user route for admin
+app.post("/users", requireAdmin, async (req, res) => {
+  try {
+    const { username, password, role } = req.body;
+
+    if (!username || !password || !role) {
+      return res.status(400).json({ error: "Username, password, and role are required" });
+    }
+
+    if (!["admin", "user"].includes(role)) {
+      return res.status(400).json({ error: "Invalid role" });
+    }
+
+    const existingUser = await User.findOne({ username: username.trim() });
+    if (existingUser) {
+      return res.status(409).json({ error: "Username already exists" });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    await User.create({
+      username: username.trim(),
+      passwordHash,
+      role,
+      isActive: true
+    });
+
+    res.json({ ok: true, message: "User created successfully" });
+  } catch (err) {
+    console.error("Create user error:", err);
+    res.status(500).json({ error: "Failed to create user" });
+  }
+});
+
+
 
 app.post("/logout", (req, res) => {
   req.session.destroy((err) => {
@@ -658,7 +708,7 @@ app.use(express.static("public", { index: false }));
 app.get("/", requirePageAuth, (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
-app.use(express.static("public"));
+
 
 mongoose.connect(process.env.MONGO_URI)
   .then(async () => {

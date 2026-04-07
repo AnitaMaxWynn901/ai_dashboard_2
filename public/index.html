@@ -10,7 +10,18 @@
 </head>
 
 <body>
-    <h1>AI Box Dashboard</h1>
+    <div class="topbar">
+    <div class="topbar-left">
+        <h1>AI Box Dashboard</h1>
+    </div>
+
+    <div class="topbar-right">
+        <span id="currentUsername" class="user-info">-</span>
+        <span id="currentRole" class="role-badge">-</span>
+        <button id="openCreateUserBtn" class="btn-primary" style="display:none;">Create User</button>
+        <button id="logoutBtn" class="btn-secondary">Logout</button>
+    </div>
+</div>
     <div class="dashboard-container">
         <div class="summary-section">
 
@@ -290,6 +301,39 @@
             </div>
         </div>
     </div>
+<!-- create user modal -->
+    <div id="createUserModal" class="modal hidden">
+    <div class="modal-content">
+        <h2 class="history-heading">Create User Account</h2>
+
+        <div class="modal-form">
+            <div class="filter-group">
+                <label>Username</label>
+                <input type="text" id="newUsernameInput" placeholder="Enter username">
+            </div>
+
+            <div class="filter-group">
+                <label>Password</label>
+                <input type="password" id="newPasswordInput" placeholder="Enter password">
+            </div>
+
+            <div class="filter-group">
+                <label>Role</label>
+                <select id="newRoleInput">
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="modal-buttons">
+            <button id="saveNewUserBtn" class="btn-primary">Create</button>
+            <button id="closeCreateUserModalBtn" class="btn-secondary">Cancel</button>
+        </div>
+
+        <p id="createUserMessage" style="margin-top:12px;"></p>
+    </div>
+</div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="script.js"></script>

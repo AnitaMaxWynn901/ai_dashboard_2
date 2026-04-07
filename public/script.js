@@ -17,22 +17,83 @@ document.addEventListener("DOMContentLoaded", () => {
         to: "",
         status: "all"
     };
-async function loadCurrentUser() {
-    try {
-        const res = await fetch("/me");
+    async function loadCurrentUser() {
+        try {
+            const res = await fetch("/me");
 
-        if (!res.ok) {
+            if (!res.ok) {
+                window.location.href = "/login.html";
+                return null;
+            }
+
+            const data = await res.json();
+            return data.user;
+        } catch (err) {
             window.location.href = "/login.html";
             return null;
         }
-
-        const data = await res.json();
-        return data.user;
-    } catch (err) {
-        window.location.href = "/login.html";
-        return null;
     }
+    //logout function
+    async function logout() {
+    try {
+        await fetch("/logout", { method: "POST" });
+    } catch (err) {
+        console.error("Logout failed:", err);
+    }
+    window.location.href = "/login.html";
 }
+
+    function openCreateUserModal() {
+        document.getElementById("createUserModal").classList.remove("hidden");
+        document.getElementById("createUserMessage").innerText = "";
+    }
+
+    function closeCreateUserModal() {
+        document.getElementById("createUserModal").classList.add("hidden");
+        document.getElementById("newUsernameInput").value = "";
+        document.getElementById("newPasswordInput").value = "";
+        document.getElementById("newRoleInput").value = "user";
+        document.getElementById("createUserMessage").innerText = "";
+    }
+
+    async function createUserAccount() {
+        const username = document.getElementById("newUsernameInput").value.trim();
+        const password = document.getElementById("newPasswordInput").value;
+        const role = document.getElementById("newRoleInput").value;
+        const msg = document.getElementById("createUserMessage");
+
+        msg.innerText = "";
+
+        try {
+            const res = await fetch("/users", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, password, role })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                msg.style.color = "red";
+                msg.innerText = data.error || "Failed to create user";
+                return;
+            }
+
+            msg.style.color = "green";
+            msg.innerText = data.message || "User created successfully";
+
+            setTimeout(() => {
+                closeCreateUserModal();
+            }, 1000);
+
+        } catch (err) {
+            msg.style.color = "red";
+            msg.innerText = "Network error";
+        }
+    }
+    
     function openMapPickerModal() {
         document.getElementById("mapPickerModal").classList.remove("hidden");
 
@@ -646,22 +707,60 @@ async function loadCurrentUser() {
     }
 
     // Initial load
-    loadBoxMeta().then(() => {
-        loadFilters();
-        initMap();
-        loadLocations().then(() => {
-            loadLiveStatus();
+
+
+
+    loadCurrentUser().then((currentUser) => {
+        if (!currentUser) return;
+
+        document.getElementById("currentUsername").innerText = currentUser.username;
+        document.getElementById("currentRole").innerText = currentUser.role;
+
+        const roleBadge = document.getElementById("currentRole");
+        roleBadge.classList.remove("role-admin", "role-user");
+        roleBadge.classList.add(currentUser.role === "admin" ? "role-admin" : "role-user");
+
+        if (currentUser.role !== "admin") {
+            const editButtons = [
+                document.getElementById("openMetaModalBtn"),
+                document.getElementById("openEditModalBtn")
+            ];
+
+            editButtons.forEach(btn => {
+                if (btn) btn.style.display = "none";
+            });
+        } else {
+            document.getElementById("openCreateUserBtn").style.display = "inline-block";
+        }
+
+        loadBoxMeta().then(() => {
+            loadFilters();
+            initMap();
+            loadLocations().then(() => {
+                loadLiveStatus();
+            });
         });
+
+        setTimeout(() => {
+            const fromInput = document.getElementById("fromFilter");
+            fromInput.value = "";
+            setDefaultFromDate();
+        }, 0);
+
+        loadLogs(false);
+
+        setInterval(() => {
+            loadLocations().then(() => {
+                loadLiveStatus();
+            });
+
+            if (filterApplied) {
+                loadLogs(true);
+            } else {
+                loadLogs(false);
+            }
+        }, 5000);
     });
-
-    setTimeout(() => {
-        const fromInput = document.getElementById("fromFilter");
-        fromInput.value = "";
-        setDefaultFromDate();
-    }, 0);
-
-    loadLogs(false);
-
     // Event listeners replacing inline handlers + window usage
     document.getElementById("openMetaModalBtn").addEventListener("click", openMetaModal);
     document.getElementById("applyFilterBtn").addEventListener("click", applyFilter);
@@ -677,48 +776,9 @@ async function loadCurrentUser() {
     document.getElementById("closeMetaModalBtn").addEventListener("click", closeMetaModal);
     document.getElementById("usePickedLocationBtn").addEventListener("click", usePickedLocation);
     document.getElementById("closeMapPickerModalBtn").addEventListener("click", closeMapPickerModal);
+    document.getElementById("logoutBtn").addEventListener("click", logout);
+    document.getElementById("openCreateUserBtn").addEventListener("click", openCreateUserModal);
+    document.getElementById("closeCreateUserModalBtn").addEventListener("click", closeCreateUserModal);
+    document.getElementById("saveNewUserBtn").addEventListener("click", createUserAccount);
 
-loadCurrentUser().then((currentUser) => {
-    if (!currentUser) return;
-
-    if (currentUser.role !== "admin") {
-        const editButtons = [
-            document.getElementById("openMetaModalBtn"),
-            document.getElementById("openEditModalBtn")
-        ];
-
-        editButtons.forEach(btn => {
-            if (btn) btn.style.display = "none";
-        });
-    }
-
-    loadBoxMeta().then(() => {
-        loadFilters();
-        initMap();
-        loadLocations().then(() => {
-            loadLiveStatus();
-        });
-    });
-
-    setTimeout(() => {
-        const fromInput = document.getElementById("fromFilter");
-        fromInput.value = "";
-        setDefaultFromDate();
-    }, 0);
-
-    loadLogs(false);
-
-   
-    setInterval(() => {
-        loadLocations().then(() => {
-            loadLiveStatus();
-        });
-
-        if (filterApplied) {
-            loadLogs(true);
-        } else {
-            loadLogs(false);
-        }
-    }, 5000);
-});
 });

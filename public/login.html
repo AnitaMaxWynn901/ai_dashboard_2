@@ -3,56 +3,311 @@
 <head>
     <meta charset="UTF-8">
     <title>Login - AI Box Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #eef2f7;
+            --card: #ffffff;
+            --border: #dde3ed;
+            --blue: #3b6fd4;
+            --blue-dark: #2d57b0;
+            --blue-dot: #4a90d9;
+            --text: #1a2a3a;
+            --muted: #6b7c93;
+            --label: #8a9bb0;
+            --offline: #e74c3c;
+            --shadow-lg: 0 8px 32px rgba(59,111,212,0.13), 0 2px 8px rgba(0,0,0,0.07);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+        }
+
+        /* Top bar */
+        .topbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 52px;
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 28px;
+            z-index: 10;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+
+        .topbar-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .topbar-dot {
+            width: 9px; height: 9px;
+            border-radius: 50%;
+            background: var(--blue-dot);
+        }
+
+        /* Wrapper */
+        .wrapper {
+            width: 100%;
+            max-width: 420px;
+            padding: 24px 16px;
+            animation: fadeUp 0.4s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            padding: 36px 28px 32px;
+        }
+
+        /* Title */
+        .page-title {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .page-title h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .page-title h1 .dot {
+            width: 9px; height: 9px;
+            border-radius: 50%;
+            background: var(--blue-dot);
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .page-title p {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        /* Fields */
+        .field { margin-bottom: 18px; }
+
+        label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--label);
+            margin-bottom: 7px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--blue);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(59,111,212,0.1);
+        }
+
+        input::placeholder { color: #b0bac8; }
+
+        /* Button */
+        .btn-row { margin-top: 24px; }
+
+        button#loginBtn {
+            width: 100%;
+            padding: 11px 20px;
+            background: var(--blue);
+            border: none;
+            border-radius: 7px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button#loginBtn:hover {
+            background: var(--blue-dark);
+            box-shadow: 0 4px 12px rgba(59,111,212,0.3);
+        }
+
+        button#loginBtn:active { transform: scale(0.98); }
+        button#loginBtn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .spinner {
+            display: none;
+            width: 15px; height: 15px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        button#loginBtn.loading .spinner { display: block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Error */
+        #errorMsg {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin-top: 14px;
+            padding: 10px 14px;
+            background: #fdf2f2;
+            border: 1px solid #f5c5c5;
+            border-radius: 7px;
+            font-size: 13px;
+            color: var(--offline);
+        }
+
+        #errorMsg.visible { display: flex; }
+
+        .err-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--offline);
+            flex-shrink: 0;
+        }
+
+        /* Bottom hint */
+        .hint {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 12px;
+            color: var(--label);
+        }
+    </style>
 </head>
 <body>
-    <div style="max-width:400px;margin:100px auto;padding:24px;border:1px solid #ddd;border-radius:12px;background:#fff;">
-        <h2 style="text-align:center;">AI Box Dashboard Login</h2>
 
-        <div style="margin-top:16px;">
-            <label>Username</label>
-            <input type="text" id="username" style="width:100%;padding:10px;margin-top:6px;">
+    <div class="topbar">
+        <div class="topbar-title">
+            <div class="topbar-dot"></div>
+            AI Box Dashboard
+        </div>
+    </div>
+
+    <div class="wrapper">
+        <div class="card">
+            <div class="page-title">
+                <h1><span class="dot"></span>AI Box Dashboard</h1>
+                <p>Sign in to access your dashboard</p>
+            </div>
+
+            <div class="field">
+                <label>Username</label>
+                <input type="text" id="username" placeholder="Enter username">
+            </div>
+
+            <div class="field">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Enter password">
+            </div>
+
+            <div class="btn-row">
+                <button id="loginBtn">
+                    <div class="spinner"></div>
+                    <span class="btn-text">Login</span>
+                </button>
+            </div>
+
+            <div id="errorMsg">
+                <div class="err-dot"></div>
+                <span id="errorText"></span>
+            </div>
         </div>
 
-        <div style="margin-top:16px;">
-            <label>Password</label>
-            <input type="password" id="password" style="width:100%;padding:10px;margin-top:6px;">
-        </div>
-
-        <button id="loginBtn" style="width:100%;margin-top:20px;padding:12px;">Login</button>
-
-        <p id="errorMsg" style="color:red;margin-top:12px;"></p>
+        <div class="hint">AI Box Management System</div>
     </div>
 
     <script>
-        document.getElementById("loginBtn").addEventListener("click", async () => {
+        const loginBtn = document.getElementById("loginBtn");
+        const errorMsg = document.getElementById("errorMsg");
+        const errorText = document.getElementById("errorText");
+
+        async function doLogin() {
             const username = document.getElementById("username").value.trim();
             const password = document.getElementById("password").value;
-            const errorMsg = document.getElementById("errorMsg");
 
-            errorMsg.innerText = "";
+            errorMsg.classList.remove("visible");
+            loginBtn.classList.add("loading");
+            loginBtn.querySelector(".btn-text").textContent = "Signing in";
+            loginBtn.disabled = true;
 
             try {
                 const res = await fetch("/login", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ username, password })
                 });
 
                 const data = await res.json();
 
                 if (!res.ok) {
-                    errorMsg.innerText = data.error || "Login failed";
+                    errorText.innerText = data.error || "Login failed";
+                    errorMsg.classList.add("visible");
+                    loginBtn.classList.remove("loading");
+                    loginBtn.querySelector(".btn-text").textContent = "Login";
+                    loginBtn.disabled = false;
                     return;
                 }
 
                 window.location.href = "/index.html";
+
             } catch (err) {
-                errorMsg.innerText = "Network error";
+                errorText.innerText = "Network error. Please try again.";
+                errorMsg.classList.add("visible");
+                loginBtn.classList.remove("loading");
+                loginBtn.querySelector(".btn-text").textContent = "Login";
+                loginBtn.disabled = false;
             }
-        });
+        }
+
+        loginBtn.addEventListener("click", doLogin);
+        document.addEventListener("keydown", (e) => { if (e.key === "Enter") doLogin(); });
     </script>
 </body>
 </html>
