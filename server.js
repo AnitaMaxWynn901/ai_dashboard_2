@@ -11,7 +11,9 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000;
 const User = require("./models/User");
 const HEARTBEAT_TIMEOUT = 4 * 60 * 1000;
-// login 
+ /* ================= LOGIN ================= */
+app.set("trust proxy", 1);
+//middleware to protect pages
 function requirePageAuth(req, res, next) {
   if (!req.session.user) {
     return res.redirect("/login.html");
