@@ -577,66 +577,160 @@ tr.offline-row:hover {
 }
 /* ================= USER MODAL ================= */
  /* ===== TOPBAR ===== */
-   /* Give page content space below fixed topbar */
-body {
-  font-family: var(--font-body);
-  background: var(--bg);
-  background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(59,130,246,0.08), transparent);
-  padding: 86px 28px 64px;   /* was 32px 28px 64px */
-  color: var(--text-1);
-  font-size: 14px;
-  line-height: 1.6;
-  min-height: 100vh;
-}
-
-/* Reset h1 only inside topbar */
-.topbar-center h1 {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 600;
-  color: #1a2a3a;
-  letter-spacing: 0.1px;
-  display: block;
-  line-height: 1;
-}
-
-/* Remove the global decorative dot before navbar title */
-.topbar-center h1::before {
-  content: none;
-}
+/* ===== TOPBAR ===== */
 .topbar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 64px; /* slightly taller */
+  height: 72px;
   background: #ffffff;
-  border-bottom: 1px solid #dde3ed;
+  border-bottom: 1px solid #e5e7eb;
   display: flex;
   align-items: center;
-  padding: 0 20px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  justify-content: space-between;
+  padding: 0 28px;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
   z-index: 1000;
 }
 
+/* give content space below fixed header */
+body {
+  padding-top: 104px;
+}
+
+/* left spacer */
+.topbar-left {
+  flex: 1;
+}
+
+/* centered title */
 .topbar-center {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   white-space: nowrap;
 }
 
+/* only ONE blinking dot */
+.topbar-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #60a5fa;
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.18);
+  flex-shrink: 0;
+  animation: topbarBlink 1.8s infinite ease-in-out;
+}
+
+.topbar-center h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  letter-spacing: -0.02em;
+  display: block;
+  line-height: 1;
+  text-align: center;
+}
+
+/* remove the global h1 decorative dot inside navbar */
+.topbar-center h1::before {
+  content: none !important;
+}
+
+/* right side */
 .topbar-right {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
-  min-width: 0;
+  gap: 10px;
+}
+
+.topbar-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: #eef2f7;
+  border: 1px solid #d9e0ea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.topbar-username {
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.btn-create {
+  padding: 10px 18px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  display: none;
+}
+
+.btn-create.visible {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-create:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.btn-logout {
+  width: 42px;
+  height: 42px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
+}
+
+.btn-logout:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.btn-logout svg {
+  width: 18px;
+  height: 18px;
+  color: #6b7280;
+}
+
+@keyframes topbarBlink {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.18);
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 0 8px rgba(96, 165, 250, 0.08);
+  }
 }
 @keyframes pulse {
   0%, 100% { opacity: 1; box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
