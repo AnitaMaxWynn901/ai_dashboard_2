@@ -10,6 +10,7 @@ A web-based dashboard for monitoring and managing AI-related services and status
 ## Tech Stack
 - Node.js
 - Express
+- bcrypt express-session
 - HTML / CSS / JavaScript
 
 ## Setup

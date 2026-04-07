@@ -17,7 +17,22 @@ document.addEventListener("DOMContentLoaded", () => {
         to: "",
         status: "all"
     };
+async function loadCurrentUser() {
+    try {
+        const res = await fetch("/me");
 
+        if (!res.ok) {
+            window.location.href = "/login.html";
+            return null;
+        }
+
+        const data = await res.json();
+        return data.user;
+    } catch (err) {
+        window.location.href = "/login.html";
+        return null;
+    }
+}
     function openMapPickerModal() {
         document.getElementById("mapPickerModal").classList.remove("hidden");
 
@@ -663,7 +678,37 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("usePickedLocationBtn").addEventListener("click", usePickedLocation);
     document.getElementById("closeMapPickerModalBtn").addEventListener("click", closeMapPickerModal);
 
-    // Auto Refresh
+loadCurrentUser().then((currentUser) => {
+    if (!currentUser) return;
+
+    if (currentUser.role !== "admin") {
+        const editButtons = [
+            document.getElementById("openMetaModalBtn"),
+            document.getElementById("openEditModalBtn")
+        ];
+
+        editButtons.forEach(btn => {
+            if (btn) btn.style.display = "none";
+        });
+    }
+
+    loadBoxMeta().then(() => {
+        loadFilters();
+        initMap();
+        loadLocations().then(() => {
+            loadLiveStatus();
+        });
+    });
+
+    setTimeout(() => {
+        const fromInput = document.getElementById("fromFilter");
+        fromInput.value = "";
+        setDefaultFromDate();
+    }, 0);
+
+    loadLogs(false);
+
+   
     setInterval(() => {
         loadLocations().then(() => {
             loadLiveStatus();
@@ -675,4 +720,5 @@ document.addEventListener("DOMContentLoaded", () => {
             loadLogs(false);
         }
     }, 5000);
+});
 });

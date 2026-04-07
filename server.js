@@ -1,15 +1,114 @@
 const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv").config();
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const bcrypt = require("bcrypt");
 
 const app = express();
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
+const User = require("./models/User");
 const HEARTBEAT_TIMEOUT = 4 * 60 * 1000;
+// login 
+
+app.use(session({
+  name: "ai_dashboard.sid",
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    collectionName: "sessions"
+  }),
+  cookie: {
+    httpOnly: true,
+    secure: false, // change to true behind HTTPS in production
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 8 // 8 hours
+  }
+}));
+function requireAuth(req, res, next) {
+  if (!req.session.user) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  next();
+}
+
+function requireAdmin(req, res, next) {
+  if (!req.session.user) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  if (req.session.user.role !== "admin") {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+
+  next();
+}
+app.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ error: "Username and password are required" });
+    }
+
+    const user = await User.findOne({ username: username.trim() });
+
+    if (!user || !user.isActive) {
+      return res.status(401).json({ error: "Invalid username or password" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.passwordHash);
+
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid username or password" });
+    }
+
+    req.session.user = {
+      id: user._id,
+      username: user.username,
+      role: user.role
+    };
+
+    res.json({
+      ok: true,
+      user: {
+        username: user.username,
+        role: user.role
+      }
+    });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ error: "Login failed" });
+  }
+});
+
+app.post("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Logout error:", err);
+      return res.status(500).json({ error: "Logout failed" });
+    }
+
+    res.clearCookie("ai_dashboard.sid");
+    res.json({ ok: true });
+  });
+});
+
+app.get("/me", (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  res.json({
+    user: req.session.user
+  });
+});
 
 /* ================= MONGOOSE SETUP ================= */
-
 mongoose.set("bufferCommands", false);
 
 const logSchema = new mongoose.Schema({
@@ -141,7 +240,7 @@ app.get("/locations", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch locations" });
   }
 });
-app.post("/locations", async (req, res) => {
+app.post("/locations", requireAdmin, async (req, res) => {
   try {
     const { boxCode, lat, lng } = req.body;
 
@@ -302,7 +401,7 @@ app.get("/box-meta", async (req, res) => {
   }
 });
 
-app.post("/box-meta", async (req, res) => {
+app.post("/box-meta", requireAdmin, async (req, res) => {
   try {
     const { boxCode, boxName, deviceName } = req.body;
 
