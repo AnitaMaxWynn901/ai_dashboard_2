@@ -35,13 +35,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     //logout function
     async function logout() {
-    try {
-        await fetch("/logout", { method: "POST" });
-    } catch (err) {
-        console.error("Logout failed:", err);
+        try {
+            await fetch("/logout", { method: "POST" });
+        } catch (err) {
+            console.error("Logout failed:", err);
+        }
+        window.location.href = "/login.html";
     }
-    window.location.href = "/login.html";
-}
 
     function openCreateUserModal() {
         document.getElementById("createUserModal").classList.remove("hidden");
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
             msg.innerText = "Network error";
         }
     }
-    
+
     function openMapPickerModal() {
         document.getElementById("mapPickerModal").classList.remove("hidden");
 
@@ -720,7 +720,9 @@ document.addEventListener("DOMContentLoaded", () => {
         roleBadge.classList.remove("role-admin", "role-user");
         roleBadge.classList.add(currentUser.role === "admin" ? "role-admin" : "role-user");
 
-        if (currentUser.role !== "admin") {
+        const role = (currentUser.role || "").trim().toLowerCase();
+
+        if (role !== "admin") {
             const editButtons = [
                 document.getElementById("openMetaModalBtn"),
                 document.getElementById("openEditModalBtn")
@@ -729,6 +731,8 @@ document.addEventListener("DOMContentLoaded", () => {
             editButtons.forEach(btn => {
                 if (btn) btn.style.display = "none";
             });
+
+            document.getElementById("openCreateUserBtn").style.display = "none";
         } else {
             document.getElementById("openCreateUserBtn").style.display = "inline-block";
         }
