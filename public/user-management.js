@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ? `<span style="color:#6b7280;font-weight:600;">Protected</span>`
                 : `
                     <button class="btn-secondary edit-user-btn" data-id="${user._id}">Edit</button>
-                    <button class="btn-secondary remove-user-btn" data-id="${user._id}">Remove</button>
+                    <button class="btn-danger remove-user-btn" data-id="${user._id}">Remove</button>
                   `;
 
             return `
