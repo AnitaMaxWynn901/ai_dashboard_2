@@ -17,7 +17,7 @@ A web-based dashboard for monitoring and managing AI-related services and status
 1. Install dependencies
    ```bash
    npm install
-## Script for sending service staus in AI box server
+## Script for sending service status in AI box server
 #!/bin/bash
 
 while true
