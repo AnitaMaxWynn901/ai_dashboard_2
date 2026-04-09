@@ -19,22 +19,7 @@ if (isProduction) {
   app.set("trust proxy", 1);
 }
 
-app.use(session({
-  name: "ai_dashboard.sid",
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  store: new MongoStore({
-    mongoUrl: process.env.MONGO_URI,
-    collectionName: "sessions"
-  }),
-  cookie: {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: "lax",
-    maxAge: 1000 * 60 * 60 * 8
-  }
-}));
+
 app.use(session({
   name: "ai_dashboard.sid",
   secret: process.env.SESSION_SECRET,
@@ -229,11 +214,12 @@ async function saveLog(entry) {
 
 app.get("/logs", async (req, res) => {
   try {
-    const { type, from, to, boxCode } = req.query;
+    const { type, from, to, boxCode, status } = req.query;
 
     let query = {
       type: "status_change",
-      online_status: { $exists: true }
+      online_status: { $exists: true },
+     
     };
 
     if (type && type !== "ALL") {
@@ -243,6 +229,9 @@ app.get("/logs", async (req, res) => {
     if (boxCode && boxCode.trim() !== "") {
       query.boxCode = boxCode.trim();
     }
+    if (status && status !== "all") {
+  query.online_status = status;
+}
 
 
     if (from || to) {

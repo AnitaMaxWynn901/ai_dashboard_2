@@ -495,14 +495,7 @@ document.querySelectorAll(".password-field").forEach(field => {
 
         for (let i = 0; i < logs.length; i++) {
             const current = logs[i];
-            const selectedStatus = appliedFilters.status;
-
-            if (
-                selectedStatus !== "all" &&
-                current.online_status !== selectedStatus
-            ) {
-                continue;
-            }
+           
 
             const currentTime = normalize(current.timestamp)?.getTime();
             let duration = "-";
@@ -555,7 +548,7 @@ document.querySelectorAll(".password-field").forEach(field => {
         document.getElementById("totalRows").innerText = totalRows;
         document.getElementById("totalDuration").innerText = formatDuration(totalDurationMs);
         document.getElementById("logTable").innerHTML = html;
-        document.getElementById("logTable").innerHTML = html;
+        
 
         const title = document.getElementById("totalRowsTitle");
 
