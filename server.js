@@ -19,17 +19,7 @@ if (isProduction) {
   app.set("trust proxy", 1);
 }
 
-app.get("/user-management.html", (req, res) => {
-  if (!req.session.user) {
-    return res.redirect("/login.html");
-  }
 
-  if (req.session.user.role !== "admin") {
-    return res.redirect("/");
-  }
-
-  res.sendFile(path.join(__dirname, "public", "user-management.html"));
-});
 app.use(session({
   name: "ai_dashboard.sid",
   secret: process.env.SESSION_SECRET,
@@ -110,7 +100,22 @@ app.post("/login", async (req, res) => {
   }
 });
 //create user route for admin
+app.get("/user-management.html", (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.redirect("/login.html");
+    }
 
+    if (req.session.user.role !== "admin") {
+      return res.redirect("/");
+    }
+
+    return res.sendFile(path.join(__dirname, "public", "user-management.html"));
+  } catch (err) {
+    console.error("User management page error:", err);
+    return res.status(500).send("Internal Server Error");
+  }
+});
 app.post("/users", requireAdmin, async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -213,7 +218,7 @@ app.delete("/users/:id", requireAdmin, async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // ❌ BLOCK admin accounts
+    //  BLOCK admin accounts
     if (user.role === "admin") {
       return res.status(403).json({ error: "Admin accounts are protected" });
     }
