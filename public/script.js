@@ -61,8 +61,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const password = document.getElementById("newPasswordInput").value;
         const role = document.getElementById("newRoleInput").value;
         const msg = document.getElementById("createUserMessage");
+        const confirmPassword = document.getElementById("confirmPasswordInput").value;
 
         msg.innerText = "";
+        if (password !== confirmPassword) {
+            msg.style.color = "red";
+            msg.innerText = "Passwords do not match";
+            return;
+        }
 
         try {
             const res = await fetch("/users", {
@@ -93,21 +99,21 @@ document.addEventListener("DOMContentLoaded", () => {
             msg.innerText = "Network error";
         }
     }
-document.querySelectorAll(".password-field").forEach(field => {
-    const input = field.querySelector(".password-input");
-    const toggle = field.querySelector(".password-toggle");
-    const eyeOpen = field.querySelector(".eye-open");
-    const eyeOff = field.querySelector(".eye-off");
+    document.querySelectorAll(".password-field").forEach(field => {
+        const input = field.querySelector(".password-input");
+        const toggle = field.querySelector(".password-toggle");
+        const eyeOpen = field.querySelector(".eye-open");
+        const eyeOff = field.querySelector(".eye-off");
 
-    if (!input || !toggle || !eyeOpen || !eyeOff) return;
+        if (!input || !toggle || !eyeOpen || !eyeOff) return;
 
-    toggle.addEventListener("click", () => {
-        const isHidden = input.type === "password";
-        input.type = isHidden ? "text" : "password";
-        eyeOpen.style.display = isHidden ? "none" : "block";
-        eyeOff.style.display = isHidden ? "block" : "none";
+        toggle.addEventListener("click", () => {
+            const isHidden = input.type === "password";
+            input.type = isHidden ? "text" : "password";
+            eyeOpen.style.display = isHidden ? "none" : "block";
+            eyeOff.style.display = isHidden ? "block" : "none";
+        });
     });
-});
 
     function openMapPickerModal() {
         document.getElementById("mapPickerModal").classList.remove("hidden");
@@ -495,7 +501,7 @@ document.querySelectorAll(".password-field").forEach(field => {
 
         for (let i = 0; i < logs.length; i++) {
             const current = logs[i];
-           
+
 
             const currentTime = normalize(current.timestamp)?.getTime();
             let duration = "-";
@@ -548,7 +554,7 @@ document.querySelectorAll(".password-field").forEach(field => {
         document.getElementById("totalRows").innerText = totalRows;
         document.getElementById("totalDuration").innerText = formatDuration(totalDurationMs);
         document.getElementById("logTable").innerHTML = html;
-        
+
 
         const title = document.getElementById("totalRowsTitle");
 
@@ -722,7 +728,7 @@ document.querySelectorAll(".password-field").forEach(field => {
         if (!currentUser) return;
 
         document.getElementById("currentUsername").innerText = currentUser.username;
-       
+
         const role = (currentUser.role || "").trim().toLowerCase();
 
         if (role !== "admin") {
