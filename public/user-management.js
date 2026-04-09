@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const statusClass = user.isActive ? "online" : "offline";
 
             const actions = user.role === "admin"
-                ? `<span style="color:#6b7280;font-weight:600;">Protected</span>`
+                ? `<span style="color:#6b7280;font-weight:600;">Invalid</span>`
                 : `
                     <button class="btn-secondary edit-user-btn" data-id="${user._id}">Edit</button>
                   <button class="btn-secondary btn-danger remove-user-btn" data-id="${user._id}">Remove</button>
