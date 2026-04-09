@@ -19,7 +19,17 @@ if (isProduction) {
   app.set("trust proxy", 1);
 }
 
+app.get("/user-management.html", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login.html");
+  }
 
+  if (req.session.user.role !== "admin") {
+    return res.redirect("/");
+  }
+
+  res.sendFile(path.join(__dirname, "public", "user-management.html"));
+});
 app.use(session({
   name: "ai_dashboard.sid",
   secret: process.env.SESSION_SECRET,
@@ -100,16 +110,13 @@ app.post("/login", async (req, res) => {
   }
 });
 //create user route for admin
+
 app.post("/users", requireAdmin, async (req, res) => {
   try {
-    const { username, password, role } = req.body;
+    const { username, password } = req.body;
 
-    if (!username || !password || !role) {
-      return res.status(400).json({ error: "Username, password, and role are required" });
-    }
-
-    if (!["admin", "user"].includes(role)) {
-      return res.status(400).json({ error: "Invalid role" });
+    if (!username || !password) {
+      return res.status(400).json({ error: "Username and password are required" });
     }
 
     const existingUser = await User.findOne({ username: username.trim() });
@@ -122,7 +129,7 @@ app.post("/users", requireAdmin, async (req, res) => {
     await User.create({
       username: username.trim(),
       passwordHash,
-      role,
+      role: "user",   // ✅ FORCE USER ONLY
       isActive: true
     });
 
@@ -132,7 +139,93 @@ app.post("/users", requireAdmin, async (req, res) => {
     res.status(500).json({ error: "Failed to create user" });
   }
 });
+app.get("/users", requireAdmin, async (req, res) => {
+  try {
+    const users = await User.find({}, {
+      username: 1,
+      role: 1,
+      isActive: 1,
+      createdAt: 1,
+      updatedAt: 1
+    }).sort({ createdAt: -1 });
 
+    res.json({ ok: true, users });
+  } catch (err) {
+    console.error("Fetch users error:", err);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+});
+//Edit user route for admin
+app.put("/users/:id", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { username, password } = req.body;
+
+    if (!username) {
+      return res.status(400).json({ error: "Username is required" });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    //  BLOCK admin accounts
+    if (user.role === "admin") {
+      return res.status(403).json({ error: "Admin accounts are protected" });
+    }
+
+    // Check duplicate username
+    const existingUser = await User.findOne({
+      username: username.trim(),
+      _id: { $ne: id }
+    });
+
+    if (existingUser) {
+      return res.status(409).json({ error: "Username already exists" });
+    }
+
+    let updateData = {
+      username: username.trim()
+    };
+
+    // Update password only if provided
+    if (password) {
+      const passwordHash = await bcrypt.hash(password, 10);
+      updateData.passwordHash = passwordHash;
+    }
+
+    await User.findByIdAndUpdate(id, updateData);
+
+    res.json({ ok: true, message: "User updated successfully" });
+  } catch (err) {
+    console.error("Update user error:", err);
+    res.status(500).json({ error: "Failed to update user" });
+  }
+});
+// Delete user route for admin
+app.delete("/users/:id", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // ❌ BLOCK admin accounts
+    if (user.role === "admin") {
+      return res.status(403).json({ error: "Admin accounts are protected" });
+    }
+
+    await User.findByIdAndDelete(id);
+
+    res.json({ ok: true, message: "User removed successfully" });
+  } catch (err) {
+    console.error("Delete user error:", err);
+    res.status(500).json({ error: "Failed to delete user" });
+  }
+});
 
 
 app.post("/logout", (req, res) => {

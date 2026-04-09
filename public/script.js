@@ -43,77 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = "/login.html";
     }
 
-    function openCreateUserModal() {
-        document.getElementById("createUserModal").classList.remove("hidden");
-        document.getElementById("createUserMessage").innerText = "";
-    }
 
-    function closeCreateUserModal() {
-        document.getElementById("createUserModal").classList.add("hidden");
-        document.getElementById("newUsernameInput").value = "";
-        document.getElementById("newPasswordInput").value = "";
-        document.getElementById("newRoleInput").value = "user";
-        document.getElementById("createUserMessage").innerText = "";
-    }
-
-    async function createUserAccount() {
-        const username = document.getElementById("newUsernameInput").value.trim();
-        const password = document.getElementById("newPasswordInput").value;
-        const role = document.getElementById("newRoleInput").value;
-        const msg = document.getElementById("createUserMessage");
-        const confirmPassword = document.getElementById("confirmPasswordInput").value;
-
-        msg.innerText = "";
-        if (password !== confirmPassword) {
-            msg.style.color = "red";
-            msg.innerText = "Passwords do not match";
-            return;
-        }
-
-        try {
-            const res = await fetch("/users", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ username, password, role })
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                msg.style.color = "red";
-                msg.innerText = data.error || "Failed to create user";
-                return;
-            }
-
-            msg.style.color = "green";
-            msg.innerText = data.message || "User created successfully";
-
-            setTimeout(() => {
-                closeCreateUserModal();
-            }, 1000);
-
-        } catch (err) {
-            msg.style.color = "red";
-            msg.innerText = "Network error";
-        }
-    }
-    document.querySelectorAll(".password-field").forEach(field => {
-        const input = field.querySelector(".password-input");
-        const toggle = field.querySelector(".password-toggle");
-        const eyeOpen = field.querySelector(".eye-open");
-        const eyeOff = field.querySelector(".eye-off");
-
-        if (!input || !toggle || !eyeOpen || !eyeOff) return;
-
-        toggle.addEventListener("click", () => {
-            const isHidden = input.type === "password";
-            input.type = isHidden ? "text" : "password";
-            eyeOpen.style.display = isHidden ? "none" : "block";
-            eyeOff.style.display = isHidden ? "block" : "none";
-        });
-    });
+    
+    
 
     function openMapPickerModal() {
         document.getElementById("mapPickerModal").classList.remove("hidden");
@@ -731,20 +663,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const role = (currentUser.role || "").trim().toLowerCase();
 
-        if (role !== "admin") {
-            const editButtons = [
-                document.getElementById("openMetaModalBtn"),
-                document.getElementById("openEditModalBtn")
-            ];
+      if (role !== "admin") {
+        const editButtons = [
+            document.getElementById("openMetaModalBtn"),
+            document.getElementById("openEditModalBtn")
+        ];
 
-            editButtons.forEach(btn => {
-                if (btn) btn.style.display = "none";
-            });
-
-            document.getElementById("openCreateUserBtn").style.display = "none";
-        } else {
-            document.getElementById("openCreateUserBtn").style.display = "inline-block";
-        }
+        editButtons.forEach(btn => {
+            if (btn) btn.style.display = "none";
+        });
+    }
 
         loadBoxMeta().then(() => {
             loadFilters();
@@ -774,6 +702,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }, 5000);
     });
+    const userMgmtBtn = document.getElementById("userManagementBtn");
+
+if (userMgmtBtn) {
+    userMgmtBtn.addEventListener("click", () => {
+        window.location.href = "/user-management.html";
+    });
+}
     // Event listeners replacing inline handlers + window usage
     document.getElementById("openMetaModalBtn").addEventListener("click", openMetaModal);
     document.getElementById("applyFilterBtn").addEventListener("click", applyFilter);
@@ -790,8 +725,5 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("usePickedLocationBtn").addEventListener("click", usePickedLocation);
     document.getElementById("closeMapPickerModalBtn").addEventListener("click", closeMapPickerModal);
     document.getElementById("logoutBtn").addEventListener("click", logout);
-    document.getElementById("openCreateUserBtn").addEventListener("click", openCreateUserModal);
-    document.getElementById("closeCreateUserModalBtn").addEventListener("click", closeCreateUserModal);
-    document.getElementById("saveNewUserBtn").addEventListener("click", createUserAccount);
-
+  
 });
