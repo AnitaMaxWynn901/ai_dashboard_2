@@ -667,7 +667,6 @@ loadCurrentUser().then((currentUser) => {
 
     const userMgmtBtn = document.getElementById("userManagementBtn");
 
-    // user cannot access admin/system controls
     if (role === "user") {
         editButtons.forEach(btn => {
             if (btn) btn.style.display = "none";
@@ -676,8 +675,7 @@ loadCurrentUser().then((currentUser) => {
         if (userMgmtBtn) {
             userMgmtBtn.style.display = "none";
         }
-    } else {
-        // admin and super-admin can see user management
+    } else if (role === "admin" || role === "super-admin") {
         if (userMgmtBtn) {
             userMgmtBtn.style.display = "inline-block";
         }

@@ -954,7 +954,12 @@ select:focus {
 .select-wrapper {
     position: relative;
 }
-
+.hidden-by-default {
+    display: none !important;
+}
+.admin-only {
+    display: none !important;
+}
 /* ================= RESPONSIVE ================= */
 @media (max-width: 900px) {
   body { padding: 16px 14px 48px; }
