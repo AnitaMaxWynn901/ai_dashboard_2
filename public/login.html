@@ -305,10 +305,12 @@
             transition: color 0.2s ease, background 0.2s ease;
         }
 
-       .password-toggle:hover {
-    background: transparent;   /* remove gray box */
-    color: var(--blue);
-}
+        .password-toggle:hover {
+            background: transparent;
+            /* remove gray box */
+            color: var(--blue);
+        }
+
         .password-toggle:focus {
             outline: none;
         }
@@ -426,7 +428,7 @@
         const errorMsg = document.getElementById("errorMsg");
         const errorText = document.getElementById("errorText");
         const passwordInput = document.getElementById("password");
-        
+
 
         async function doLogin() {
             const username = document.getElementById("username").value.trim();
@@ -454,8 +456,13 @@
                     loginBtn.disabled = false;
                     return;
                 }
-
-                window.location.href = "/index.html";
+                if (data.user.role === "user") {
+                    window.location.href = "/dashboard-user.html";
+                } else if (data.user.role === "admin" || data.user.role === "super-admin") {
+                    window.location.href = "/dashboard-admin.html";
+                } else {
+                    window.location.href = "/login.html";
+                }
 
             } catch (err) {
                 errorText.innerText = "Network error. Please try again.";

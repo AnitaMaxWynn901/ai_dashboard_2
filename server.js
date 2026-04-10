@@ -871,7 +871,7 @@ app.get("/", requirePageAuth, (req, res) => {
     return res.redirect("/dashboard-admin.html");
   }
 
-  res.redirect("/login.html");
+  return res.redirect("/login.html");
 });
 
 mongoose.connect(process.env.MONGO_URI)
