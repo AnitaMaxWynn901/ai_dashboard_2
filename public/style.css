@@ -593,21 +593,31 @@ tr.offline-row:hover {
   align-items: center;
 
   padding: 0 28px;
-  background: #ffffff; /* same as before */
+  background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
   box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
   z-index: 1000;
 }
 
-.topbar-center {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+.topbar-left {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+}
+
+.topbar-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 10px;
   white-space: nowrap;
-  pointer-events: none;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
 }
 /* only ONE blinking dot */
 .topbar-dot {
@@ -637,13 +647,6 @@ tr.offline-row:hover {
 }
 
 /* right side */
-.topbar-right {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-}
 
 .topbar-avatar {
   width: 38px;
