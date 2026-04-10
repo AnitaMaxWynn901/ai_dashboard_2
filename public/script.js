@@ -676,6 +676,9 @@ loadCurrentUser().then((currentUser) => {
             userMgmtBtn.classList.add("hidden-by-default");
         }
     } else if (role === "admin" || role === "super-admin") {
+        editButtons.forEach(btn => {
+        if (btn) btn.style.display = "inline-block";
+    });
         if (userMgmtBtn) {
             userMgmtBtn.classList.remove("hidden-by-default");
         }
