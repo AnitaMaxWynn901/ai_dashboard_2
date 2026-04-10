@@ -31,7 +31,7 @@ app.use(session({
   }),
   cookie: {
     httpOnly: true,
-    secure: true,   
+   secure: isProduction,
     sameSite: "lax",
     maxAge: 1000 * 60 * 60 * 8
   }
@@ -102,11 +102,13 @@ app.post("/login", async (req, res) => {
 //create user route for admin
 app.get("/user-management.html", (req, res) => {
   try {
-    if (!req.session.user) {
+    if (!req.session || !req.session.user) {
       return res.redirect("/login.html");
     }
 
-    if (req.session.user.role !== "admin") {
+    const role = req.session.user.role;
+
+    if (role !== "admin" && role !== "super-admin") {
       return res.redirect("/");
     }
 
@@ -116,19 +118,25 @@ app.get("/user-management.html", (req, res) => {
     return res.status(500).send("Internal Server Error");
   }
 });
-app.post("/users", requireAdmin, async (req, res) => {
+app.post("/users", requireAuth, async (req, res) => {
   try {
-  const currentRole = req.session.user.role;
+    const currentRole = req.session.user.role;
+    const { username, password, role } = req.body;
 
-if (currentRole === "admin" && role !== "user") {
-  return res.status(403).json({ error: "Admin can create only user accounts" });
-}
+    if (!username || !password || !role) {
+      return res.status(400).json({ error: "Username, password, and role are required" });
+    }
 
-if (!["admin", "user"].includes(role)) {
-  return res.status(400).json({ error: "Invalid role" });
-}
-    if (!username || !password) {
-      return res.status(400).json({ error: "Username and password are required" });
+    if (!["admin", "user"].includes(role)) {
+      return res.status(400).json({ error: "Invalid role" });
+    }
+
+    if (currentRole !== "admin" && currentRole !== "super-admin") {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    if (currentRole === "admin" && role !== "user") {
+      return res.status(403).json({ error: "Admin can create only user accounts" });
     }
 
     const existingUser = await User.findOne({ username: username.trim() });
@@ -141,7 +149,7 @@ if (!["admin", "user"].includes(role)) {
     await User.create({
       username: username.trim(),
       passwordHash,
-      role: "user",   // ✅ FORCE USER ONLY
+      role,
       isActive: true
     });
 
@@ -151,18 +159,24 @@ if (!["admin", "user"].includes(role)) {
     res.status(500).json({ error: "Failed to create user" });
   }
 });
-app.get("/users", requireAdmin, async (req, res) => {
+app.get("/users", requireAuth, async (req, res) => {
   try {
+    const currentRole = req.session.user.role;
+
+    if (currentRole !== "admin" && currentRole !== "super-admin") {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
     const users = await User.find(
-  { role: { $ne: "super-admin" } },   // 🔥 THIS LINE
-  {
-    username: 1,
-    role: 1,
-    isActive: 1,
-    createdAt: 1,
-    updatedAt: 1
-  }
-).sort({ createdAt: -1 });
+      { role: { $ne: "super-admin" } },
+      {
+        username: 1,
+        role: 1,
+        isActive: 1,
+        createdAt: 1,
+        updatedAt: 1
+      }
+    ).sort({ createdAt: -1 });
 
     res.json({ ok: true, users });
   } catch (err) {
@@ -185,6 +199,9 @@ app.put("/users/:id", requireAuth, async (req, res) => {
     if (!targetUser) {
       return res.status(404).json({ error: "User not found" });
     }
+    if (currentRole !== "admin" && currentRole !== "super-admin") {
+  return res.status(403).json({ error: "Forbidden" });
+}
 
     // Never allow editing super-admin from this page
     if (targetUser.role === "super-admin") {
@@ -235,26 +252,26 @@ app.put("/users/:id", requireAuth, async (req, res) => {
   }
 });
 // Delete user route for admin
-app.delete("/users/:id", requireAdmin, async (req, res) => {
+app.delete("/users/:id", requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const currentRole = req.session.user.role;
 
-    const user = await User.findById(id);
-    if (targetUser.role === "super-admin") {
-  return res.status(403).json({ error: "Super-admin is protected" });
-}
+    if (currentRole !== "admin" && currentRole !== "super-admin") {
+      return res.status(403).json({ error: "Forbidden" });
+    }
 
-if (currentRole === "admin" && targetUser.role !== "user") {
-  return res.status(403).json({ error: "Admin can delete only user accounts" });
-}
-    if (!user) {
+    const targetUser = await User.findById(id);
+    if (!targetUser) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    //  BLOCK admin accounts
-    if (user.role === "admin") {
-      return res.status(403).json({ error: "Admin accounts are protected" });
+    if (targetUser.role === "super-admin") {
+      return res.status(403).json({ error: "Super-admin is protected" });
+    }
+
+    if (currentRole === "admin" && targetUser.role !== "user") {
+      return res.status(403).json({ error: "Admin can delete only user accounts" });
     }
 
     await User.findByIdAndDelete(id);
@@ -265,7 +282,6 @@ if (currentRole === "admin" && targetUser.role !== "user") {
     res.status(500).json({ error: "Failed to delete user" });
   }
 });
-
 
 app.post("/logout", (req, res) => {
   req.session.destroy((err) => {
