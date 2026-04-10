@@ -118,8 +118,15 @@ app.get("/user-management.html", (req, res) => {
 });
 app.post("/users", requireAdmin, async (req, res) => {
   try {
-    const { username, password } = req.body;
+  const currentRole = req.session.user.role;
 
+if (currentRole === "admin" && role !== "user") {
+  return res.status(403).json({ error: "Admin can create only user accounts" });
+}
+
+if (!["admin", "user"].includes(role)) {
+  return res.status(400).json({ error: "Invalid role" });
+}
     if (!username || !password) {
       return res.status(400).json({ error: "Username and password are required" });
     }
@@ -146,13 +153,16 @@ app.post("/users", requireAdmin, async (req, res) => {
 });
 app.get("/users", requireAdmin, async (req, res) => {
   try {
-    const users = await User.find({}, {
-      username: 1,
-      role: 1,
-      isActive: 1,
-      createdAt: 1,
-      updatedAt: 1
-    }).sort({ createdAt: -1 });
+    const users = await User.find(
+  { role: { $ne: "super-admin" } },   // 🔥 THIS LINE
+  {
+    username: 1,
+    role: 1,
+    isActive: 1,
+    createdAt: 1,
+    updatedAt: 1
+  }
+).sort({ createdAt: -1 });
 
     res.json({ ok: true, users });
   } catch (err) {
@@ -161,26 +171,36 @@ app.get("/users", requireAdmin, async (req, res) => {
   }
 });
 //Edit user route for admin
-app.put("/users/:id", requireAdmin, async (req, res) => {
+app.put("/users/:id", requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
-    const { username, password } = req.body;
+    const { username, password, role } = req.body;
+    const currentRole = req.session.user.role;
 
     if (!username) {
       return res.status(400).json({ error: "Username is required" });
     }
 
-    const user = await User.findById(id);
-    if (!user) {
+    const targetUser = await User.findById(id);
+    if (!targetUser) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    //  BLOCK admin accounts
-    if (user.role === "admin") {
-      return res.status(403).json({ error: "Admin accounts are protected" });
+    // Never allow editing super-admin from this page
+    if (targetUser.role === "super-admin") {
+      return res.status(403).json({ error: "Super-admin is protected" });
     }
 
-    // Check duplicate username
+    // Admin can edit only user accounts
+    if (currentRole === "admin" && targetUser.role !== "user") {
+      return res.status(403).json({ error: "Admin can edit only user accounts" });
+    }
+
+    // Only admin and super-admin can use this route
+    if (currentRole !== "admin" && currentRole !== "super-admin") {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
     const existingUser = await User.findOne({
       username: username.trim(),
       _id: { $ne: id }
@@ -190,14 +210,20 @@ app.put("/users/:id", requireAdmin, async (req, res) => {
       return res.status(409).json({ error: "Username already exists" });
     }
 
-    let updateData = {
+    const updateData = {
       username: username.trim()
     };
 
     // Update password only if provided
     if (password) {
-      const passwordHash = await bcrypt.hash(password, 10);
-      updateData.passwordHash = passwordHash;
+      updateData.passwordHash = await bcrypt.hash(password, 10);
+    }
+
+    // Only super-admin can change role
+    if (currentRole === "super-admin") {
+      if (role && ["admin", "user"].includes(role)) {
+        updateData.role = role;
+      }
     }
 
     await User.findByIdAndUpdate(id, updateData);
@@ -212,8 +238,16 @@ app.put("/users/:id", requireAdmin, async (req, res) => {
 app.delete("/users/:id", requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
+    const currentRole = req.session.user.role;
 
     const user = await User.findById(id);
+    if (targetUser.role === "super-admin") {
+  return res.status(403).json({ error: "Super-admin is protected" });
+}
+
+if (currentRole === "admin" && targetUser.role !== "user") {
+  return res.status(403).json({ error: "Admin can delete only user accounts" });
+}
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }

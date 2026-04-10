@@ -57,12 +57,27 @@ document.addEventListener("DOMContentLoaded", () => {
             const statusText = user.isActive ? "Active" : "Inactive";
             const statusClass = user.isActive ? "online" : "offline";
 
-            const actions = user.role === "admin"
-                ? `<span style="color:#6b7280;font-weight:600;">Invalid</span>`
-                : `
-                    <button class="btn-secondary edit-user-btn" data-id="${user._id}">Edit</button>
-                  <button class="btn-secondary btn-danger remove-user-btn" data-id="${user._id}">Remove</button>
-                  `;
+            const actions = (() => {
+                if (currentUserRole === "super-admin") {
+                    return `
+            <button class="btn-secondary edit-user-btn" data-id="${user._id}">Edit</button>
+            <button class="btn-secondary btn-danger remove-user-btn" data-id="${user._id}">Remove</button>
+        `;
+                }
+
+                if (currentUserRole === "admin") {
+                    if (user.role === "user") {
+                        return `
+                <button class="btn-secondary edit-user-btn" data-id="${user._id}">Edit</button>
+                <button class="btn-secondary btn-danger remove-user-btn" data-id="${user._id}">Remove</button>
+            `;
+                    }
+
+                    return `<span style="color:#6b7280;font-weight:600;">Protected</span>`;
+                }
+
+                return `<span style="color:#6b7280;font-weight:600;">Protected</span>`;
+            })();
 
             return `
                 <tr>
@@ -127,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const password = document.getElementById("newPasswordInput").value;
         const confirmPassword = document.getElementById("confirmPasswordInput").value;
         const msg = document.getElementById("createUserMessage");
+        const role = document.getElementById("newRoleInput").value;
 
         msg.innerText = "";
 
@@ -148,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ username, password, role })
             });
 
             const data = await res.json();
@@ -288,8 +304,24 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     }
+    function populateCreateRoleOptions(role) {
+        const select = document.getElementById("newRoleInput");
+
+        if (role === "super-admin") {
+            select.innerHTML = `
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+        `;
+        } else {
+            select.innerHTML = `
+            <option value="user">User</option>
+        `;
+        }
+    }
 
     loadCurrentUser().then(async (currentUser) => {
+        currentUserRole = (currentUser.role || "").trim().toLowerCase();
+        populateCreateRoleOptions(currentUserRole);
         if (!currentUser) return;
 
         if ((currentUser.role || "").trim().toLowerCase() !== "admin") {
