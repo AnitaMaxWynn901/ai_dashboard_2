@@ -673,11 +673,11 @@ loadCurrentUser().then((currentUser) => {
         });
 
         if (userMgmtBtn) {
-            userMgmtBtn.style.display = "none";
+            userMgmtBtn.classList.add("hidden-by-default");
         }
     } else if (role === "admin" || role === "super-admin") {
         if (userMgmtBtn) {
-            userMgmtBtn.style.display = "inline-block";
+            userMgmtBtn.classList.remove("hidden-by-default");
         }
     }
 
