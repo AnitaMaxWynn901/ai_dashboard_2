@@ -324,12 +324,12 @@ document.addEventListener("DOMContentLoaded", () => {
         populateCreateRoleOptions(currentUserRole);
         if (!currentUser) return;
 
-      const role = (currentUser.role || "").trim().toLowerCase();
+        const role = (currentUser.role || "").trim().toLowerCase();
 
-if (role !== "admin" && role !== "super-admin") {
-    window.location.href = "/";
-    return;
-}
+        if (role !== "admin" && role !== "super-admin") {
+            window.location.href = "/";
+            return;
+        }
 
         document.getElementById("currentUsername").innerText = currentUser.username;
         await loadUsers();

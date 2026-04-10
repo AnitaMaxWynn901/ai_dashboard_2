@@ -922,6 +922,38 @@ background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
   margin-bottom: 12px;
   color: var(--text-1);
 }
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+select {
+    width: 100%;
+    padding: 12px 40px 12px 14px; /* extra space for arrow */
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+
+    font-size: 14px;
+    color: #111827;
+
+    background-image: url("data:image/svg+xml;utf8,<svg fill='none' stroke='%236b7280' stroke-width='2' viewBox='0 0 24 24'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+}
+select:hover {
+    border-color: #c7d2fe;
+}
+
+select:focus {
+    outline: none;
+    border-color: #6366f1;
+    background-color: #ffffff;
+}
+.select-wrapper {
+    position: relative;
+}
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 900px) {
