@@ -665,24 +665,39 @@ loadCurrentUser().then((currentUser) => {
         document.getElementById("openEditModalBtn")
     ];
 
+    loadCurrentUser().then((currentUser) => {
+    if (!currentUser) return;
+
+    document.getElementById("currentUsername").innerText = currentUser.username;
+
+    const role = (currentUser.role || "").trim().toLowerCase();
+
+    const editButtons = [
+        document.getElementById("openMetaModalBtn"),
+        document.getElementById("openEditModalBtn")
+    ];
+
     const userMgmtBtn = document.getElementById("userManagementBtn");
 
     if (role === "user") {
         editButtons.forEach(btn => {
-            if (btn) btn.style.display = "none";
+            if (btn) btn.classList.add("admin-only");
         });
 
         if (userMgmtBtn) {
             userMgmtBtn.classList.add("hidden-by-default");
         }
+
     } else if (role === "admin" || role === "super-admin") {
         editButtons.forEach(btn => {
-        if (btn) btn.style.display = "inline-block";
-    });
+            if (btn) btn.classList.remove("admin-only");
+        });
+
         if (userMgmtBtn) {
             userMgmtBtn.classList.remove("hidden-by-default");
         }
     }
+});
 
     loadBoxMeta().then(() => {
         loadFilters();
@@ -713,7 +728,7 @@ loadCurrentUser().then((currentUser) => {
     }, 5000);
 });
 
-const userMgmtBtn = document.getElementById("userManagementBtn");
+
 
 if (userMgmtBtn) {
     userMgmtBtn.addEventListener("click", () => {
