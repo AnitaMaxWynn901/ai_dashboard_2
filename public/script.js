@@ -653,62 +653,72 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Initial load
+loadCurrentUser().then((currentUser) => {
+    if (!currentUser) return;
 
+    document.getElementById("currentUsername").innerText = currentUser.username;
 
+    const role = (currentUser.role || "").trim().toLowerCase();
 
-    loadCurrentUser().then((currentUser) => {
-        if (!currentUser) return;
+    const editButtons = [
+        document.getElementById("openMetaModalBtn"),
+        document.getElementById("openEditModalBtn")
+    ];
 
-        document.getElementById("currentUsername").innerText = currentUser.username;
+    const userMgmtBtn = document.getElementById("userManagementBtn");
 
-        const role = (currentUser.role || "").trim().toLowerCase();
-
-      if (role !== "admin") {
-        const editButtons = [
-            document.getElementById("openMetaModalBtn"),
-            document.getElementById("openEditModalBtn")
-        ];
-
+    // user cannot access admin/system controls
+    if (role === "user") {
         editButtons.forEach(btn => {
             if (btn) btn.style.display = "none";
         });
+
+        if (userMgmtBtn) {
+            userMgmtBtn.style.display = "none";
+        }
+    } else {
+        // admin and super-admin can see user management
+        if (userMgmtBtn) {
+            userMgmtBtn.style.display = "inline-block";
+        }
     }
 
-        loadBoxMeta().then(() => {
-            loadFilters();
-            initMap();
-            loadLocations().then(() => {
-                loadLiveStatus();
-            });
+    loadBoxMeta().then(() => {
+        loadFilters();
+        initMap();
+        loadLocations().then(() => {
+            loadLiveStatus();
+        });
+    });
+
+    setTimeout(() => {
+        const fromInput = document.getElementById("fromFilter");
+        fromInput.value = "";
+        setDefaultFromDate();
+    }, 0);
+
+    loadLogs(false);
+
+    setInterval(() => {
+        loadLocations().then(() => {
+            loadLiveStatus();
         });
 
-        setTimeout(() => {
-            const fromInput = document.getElementById("fromFilter");
-            fromInput.value = "";
-            setDefaultFromDate();
-        }, 0);
+        if (filterApplied) {
+            loadLogs(true);
+        } else {
+            loadLogs(false);
+        }
+    }, 5000);
+});
 
-        loadLogs(false);
-
-        setInterval(() => {
-            loadLocations().then(() => {
-                loadLiveStatus();
-            });
-
-            if (filterApplied) {
-                loadLogs(true);
-            } else {
-                loadLogs(false);
-            }
-        }, 5000);
-    });
-    const userMgmtBtn = document.getElementById("userManagementBtn");
+const userMgmtBtn = document.getElementById("userManagementBtn");
 
 if (userMgmtBtn) {
     userMgmtBtn.addEventListener("click", () => {
         window.location.href = "/user-management.html";
     });
-}
+} 
     // Event listeners replacing inline handlers + window usage
     document.getElementById("openMetaModalBtn").addEventListener("click", openMetaModal);
     document.getElementById("applyFilterBtn").addEventListener("click", applyFilter);
