@@ -715,6 +715,7 @@ loadCurrentUser().then((currentUser) => {
 
 // ================= EVENT LISTENERS =================
 document.getElementById("openMetaModalBtn").addEventListener("click", openMetaModal);
+document.getElementById("logoutBtn").addEventListener("click", logout);
 document.getElementById("applyFilterBtn").addEventListener("click", applyFilter);
 document.getElementById("resetFilterBtn").addEventListener("click", resetFilter);
 document.getElementById("locationBox").addEventListener("change", fillLocationInputs);
@@ -728,5 +729,5 @@ document.getElementById("saveBoxMetaBtn").addEventListener("click", saveBoxMeta)
 document.getElementById("closeMetaModalBtn").addEventListener("click", closeMetaModal);
 document.getElementById("usePickedLocationBtn").addEventListener("click", usePickedLocation);
 document.getElementById("closeMapPickerModalBtn").addEventListener("click", closeMapPickerModal);
-document.getElementById("logoutBtn").addEventListener("click", logout);
+
 });
