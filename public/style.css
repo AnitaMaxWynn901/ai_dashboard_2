@@ -600,12 +600,15 @@ tr.offline-row:hover {
 }
 
 .topbar-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
+  white-space: nowrap;
+  pointer-events: none;
 }
-
 /* only ONE blinking dot */
 .topbar-dot {
   width: 10px;
