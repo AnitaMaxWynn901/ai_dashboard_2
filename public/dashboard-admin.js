@@ -729,3 +729,4 @@ document.getElementById("closeMetaModalBtn").addEventListener("click", closeMeta
 document.getElementById("usePickedLocationBtn").addEventListener("click", usePickedLocation);
 document.getElementById("closeMapPickerModalBtn").addEventListener("click", closeMapPickerModal);
 document.getElementById("logoutBtn").addEventListener("click", logout);
+});
