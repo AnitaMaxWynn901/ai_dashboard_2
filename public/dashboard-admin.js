@@ -652,53 +652,34 @@ document.addEventListener("DOMContentLoaded", () => {
         loadLogs(false);
     }
 
-    // Initial load
+// ================= INITIAL LOAD =================
 loadCurrentUser().then((currentUser) => {
     if (!currentUser) return;
 
-    document.getElementById("currentUsername").innerText = currentUser.username;
+    const usernameEl = document.getElementById("currentUsername");
+    if (usernameEl) {
+        usernameEl.innerText = currentUser.username;
+    }
 
     const role = (currentUser.role || "").trim().toLowerCase();
-
-    const editButtons = [
-        document.getElementById("openMetaModalBtn"),
-        document.getElementById("openEditModalBtn")
-    ];
-
-    loadCurrentUser().then((currentUser) => {
-    if (!currentUser) return;
-
-    document.getElementById("currentUsername").innerText = currentUser.username;
-
-    const role = (currentUser.role || "").trim().toLowerCase();
-
-    const editButtons = [
-        document.getElementById("openMetaModalBtn"),
-        document.getElementById("openEditModalBtn")
-    ];
-
     const userMgmtBtn = document.getElementById("userManagementBtn");
 
-    if (role === "user") {
-        editButtons.forEach(btn => {
-            if (btn) btn.classList.add("admin-only");
-        });
-
-        if (userMgmtBtn) {
-            userMgmtBtn.classList.add("hidden-by-default");
-        }
-
-    } else if (role === "admin" || role === "super-admin") {
-        editButtons.forEach(btn => {
-            if (btn) btn.classList.remove("admin-only");
-        });
-
-        if (userMgmtBtn) {
-            userMgmtBtn.classList.remove("hidden-by-default");
-        }
+    //  Block normal users from admin page
+    if (role !== "admin" && role !== "super-admin") {
+        window.location.href = "/dashboard-user.html";
+        return;
     }
-});
 
+    //  Admin + Super-admin can access user management
+    if (userMgmtBtn) {
+        userMgmtBtn.classList.remove("hidden-by-default");
+
+        userMgmtBtn.addEventListener("click", () => {
+            window.location.href = "/user-management.html";
+        });
+    }
+
+    // Load dashboard data
     loadBoxMeta().then(() => {
         loadFilters();
         initMap();
@@ -709,12 +690,15 @@ loadCurrentUser().then((currentUser) => {
 
     setTimeout(() => {
         const fromInput = document.getElementById("fromFilter");
-        fromInput.value = "";
-        setDefaultFromDate();
+        if (fromInput) {
+            fromInput.value = "";
+            setDefaultFromDate();
+        }
     }, 0);
 
     loadLogs(false);
 
+    // 🔄 Auto refresh
     setInterval(() => {
         loadLocations().then(() => {
             loadLiveStatus();
@@ -729,27 +713,19 @@ loadCurrentUser().then((currentUser) => {
 });
 
 
-
-if (userMgmtBtn) {
-    userMgmtBtn.addEventListener("click", () => {
-        window.location.href = "/user-management.html";
-    });
-} 
-    // Event listeners replacing inline handlers + window usage
-    document.getElementById("openMetaModalBtn").addEventListener("click", openMetaModal);
-    document.getElementById("applyFilterBtn").addEventListener("click", applyFilter);
-    document.getElementById("resetFilterBtn").addEventListener("click", resetFilter);
-    document.getElementById("locationBox").addEventListener("change", fillLocationInputs);
-    document.getElementById("openMapPickerBtn").addEventListener("click", openMapPickerModal);
-    document.getElementById("saveLocationBtn").addEventListener("click", saveLocation);
-    document.getElementById("closeEditModalBtn").addEventListener("click", closeEditModal);
-    document.getElementById("searchBox").addEventListener("change", findBoxOnMap);
-    document.getElementById("openEditModalBtn").addEventListener("click", openEditModal);
-    document.getElementById("metaBox").addEventListener("change", fillMetaInputs);
-    document.getElementById("saveBoxMetaBtn").addEventListener("click", saveBoxMeta);
-    document.getElementById("closeMetaModalBtn").addEventListener("click", closeMetaModal);
-    document.getElementById("usePickedLocationBtn").addEventListener("click", usePickedLocation);
-    document.getElementById("closeMapPickerModalBtn").addEventListener("click", closeMapPickerModal);
-    document.getElementById("logoutBtn").addEventListener("click", logout);
-  
-});
+// ================= EVENT LISTENERS =================
+document.getElementById("openMetaModalBtn").addEventListener("click", openMetaModal);
+document.getElementById("applyFilterBtn").addEventListener("click", applyFilter);
+document.getElementById("resetFilterBtn").addEventListener("click", resetFilter);
+document.getElementById("locationBox").addEventListener("change", fillLocationInputs);
+document.getElementById("openMapPickerBtn").addEventListener("click", openMapPickerModal);
+document.getElementById("saveLocationBtn").addEventListener("click", saveLocation);
+document.getElementById("closeEditModalBtn").addEventListener("click", closeEditModal);
+document.getElementById("searchBox").addEventListener("change", findBoxOnMap);
+document.getElementById("openEditModalBtn").addEventListener("click", openEditModal);
+document.getElementById("metaBox").addEventListener("change", fillMetaInputs);
+document.getElementById("saveBoxMetaBtn").addEventListener("click", saveBoxMeta);
+document.getElementById("closeMetaModalBtn").addEventListener("click", closeMetaModal);
+document.getElementById("usePickedLocationBtn").addEventListener("click", usePickedLocation);
+document.getElementById("closeMapPickerModalBtn").addEventListener("click", closeMapPickerModal);
+document.getElementById("logoutBtn").addEventListener("click", logout);

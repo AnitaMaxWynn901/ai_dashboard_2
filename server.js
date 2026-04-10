@@ -49,18 +49,32 @@ function requireAuth(req, res, next) {
   }
   next();
 }
-
 function requireAdmin(req, res, next) {
   if (!req.session.user) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  if (req.session.user.role !== "admin") {
+  const role = req.session.user.role;
+
+  if (role !== "admin" && role !== "super-admin") {
     return res.status(403).json({ error: "Forbidden" });
   }
 
   next();
 }
+app.get("/dashboard-admin.html", requirePageAuth, (req, res) => {
+  const role = req.session.user.role;
+
+  if (role !== "admin" && role !== "super-admin") {
+    return res.redirect("/dashboard-user.html");
+  }
+
+  res.sendFile(path.join(__dirname, "public", "dashboard-admin.html"));
+});
+
+app.get("/dashboard-user.html", requirePageAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "dashboard-user.html"));
+});
 app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -199,10 +213,7 @@ app.put("/users/:id", requireAuth, async (req, res) => {
     if (!targetUser) {
       return res.status(404).json({ error: "User not found" });
     }
-    if (currentRole !== "admin" && currentRole !== "super-admin") {
-  return res.status(403).json({ error: "Forbidden" });
-}
-
+   
     // Never allow editing super-admin from this page
     if (targetUser.role === "super-admin") {
       return res.status(403).json({ error: "Super-admin is protected" });
@@ -850,9 +861,18 @@ async function startOfflineChecker() {
 app.use(express.static("public", { index: false }));
 
 app.get("/", requirePageAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
+  const role = req.session.user.role;
 
+  if (role === "user") {
+    return res.redirect("/dashboard-user.html");
+  }
+
+  if (role === "admin" || role === "super-admin") {
+    return res.redirect("/dashboard-admin.html");
+  }
+
+  res.redirect("/login.html");
+});
 
 mongoose.connect(process.env.MONGO_URI)
   .then(async () => {

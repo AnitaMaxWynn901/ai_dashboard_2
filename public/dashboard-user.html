@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AI Box Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+
+<body>
+    <div class="topbar">
+
+
+        <div class="topbar-left"></div>
+
+        <!-- Center title -->
+        <div class="topbar-center">
+            <div class="topbar-dot"></div>
+            <h1>AI Box Dashboard</h1>
+        </div>
+
+        <!-- Right controls -->
+        <div class="topbar-right">
+            <!-- <div class="topbar-avatar" id="userAvatar">AD</div> -->
+            <span class="topbar-username" id="currentUsername">User</span>
+
+           
+
+                <button id="logoutBtn" class="btn-secondary">Logout</button>
+            
+
+          
+        </div>
+
+    </div>
+    <div class="dashboard-container">
+        <div class="summary-section">
+
+            <!-- AI BOX SUMMARY -->
+            <div>
+                <h2 class="summary-title">AI Box Summary</h2>
+                <div class="summary" id="aiSummary">
+
+                    <div class="summary-card">
+                        <div>Total</div>
+                        <div class="value" id="aiTotalHB">0</div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div class="online">Online</div>
+                        <div class="value" id="aiOnlineDuration">0</div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div class="offline">Offline</div>
+                        <div class="value" id="aiOfflineDuration">0</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- NODE-RED SUMMARY -->
+            <div>
+                <h2 class="summary-title">Node-RED Summary</h2>
+                <div class="summary" id="nodeSummary">
+
+                    <div class="summary-card">
+                        <div>Total</div>
+                        <div class="value" id="nodeTotalHB">0</div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div class="online">Online</div>
+                        <div class="value" id="nodeOnlineDuration">0</div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div class="offline">Offline</div>
+                        <div class="value" id="nodeOfflineDuration">0</div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!--: LIVE TABLE -->
+        <div class="table-section">
+            <div class="table-header-actions">
+                <h2 class="summary-title">AI Box Live Status</h2>
+                
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th rowspan="2">No.</th>
+                            <th rowspan="2">Box Code</th>
+                            <th colspan="6">AI Box</th>
+                            <th colspan="3">Notifications</th>
+                        </tr>
+                        <tr>
+                            <th class="group-device">Device Status</th>
+                            <th class="group-device">Last Heartbeat</th>
+
+                            <th class="group-media">Media</th>
+                            <th class="group-media">Last Update</th>
+
+                            <th class="group-ai">AI Server</th>
+                            <th class="group-ai">Last Update</th>
+
+                            <th class="group-node">DEVICE NAME</th>
+                            <th class="group-node">Node red Status</th>
+                            <th class="group-node">Last Update</th>
+                        </tr>
+                    </thead>
+                    <tbody id="liveTable">
+                        <tr>
+                            <td colspan="11">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="filter-container">
+        <div class="filter-group">
+            <label>Type</label>
+            <select id="typeFilter">
+                <option value="ALL">All</option>
+                <option value="AI_BOX">AI Box</option>
+                <option value="NODE_RED">Node-RED</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label>Box Code</label>
+            <select id="boxCodeFilter">
+                <option value="">All Box Codes</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label>From</label>
+            <input type="datetime-local" id="fromFilter">
+        </div>
+
+        <div class="filter-group">
+            <label>To</label>
+            <input type="datetime-local" id="toFilter">
+        </div>
+
+        <div class="filter-group">
+            <label>Status</label>
+            <select id="statusFilter">
+                <option value="all">All</option>
+                <option value="online">Online</option>
+                <option value="offline">Offline</option>
+            </select>
+        </div>
+
+        <div class="filter-buttons">
+            <button id="applyFilterBtn" class="btn-primary">Apply</button>
+            <button id="resetFilterBtn" class="btn-secondary">Reset</button>
+        </div>
+    </div>
+
+    <div class="history-summary">
+        <div class="card online-card">
+            <h3 id="totalRowsTitle">Total </h3>
+            <p id="totalRows">0</p>
+        </div>
+
+        <div class="card offline-card">
+            <h3>Total Duration</h3>
+            <p id="totalDuration">0</p>
+        </div>
+    </div>
+
+    <!-- ================= HISTORY ================= -->
+    <h2>AI Box Status History</h2>
+
+    <div style="max-width:1100px;margin:auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Online Status</th>
+                    <th>Date & Time</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+            <tbody id="logTable">
+                <tr>
+                    <td colspan="5">Loading...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="divider"></div>
+
+    
+    <div class="location-editor">
+        <select id="searchBox">
+            <option value="">Select Box</option>
+        </select>
+       
+    </div>
+
+    <div class="map-section">
+        <div class="table-responsive">
+            <div id="map" style="height: 450px; max-width: 1100px; margin: 20px auto 12px; border-radius: 12px"></div>
+        </div>
+
+        <div class="map-legend">
+            <div class="legend-item">
+                <span class="legend-dot legend-red"></span>
+                <span>Both offline</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot legend-orange"></span>
+                <span>One offline</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot legend-green"></span>
+                <span>Both online</span>
+            </div>
+        </div>
+    </div>
+
+    
+
+   
+
+
+
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="dashboard-user.js"></script>
+</body>
+
+</html>
