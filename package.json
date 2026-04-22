@@ -17,6 +17,14 @@
     "express-session": "^1.19.0",
     "mongoose": "^9.2.2"
   },
-  "description": "",
-  "type": "commonjs"
+  "description": "Created by Htet Lin Aung as AI Infrastructure Monitoring Dashboard Project.\r ## AI Dashboard",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AnitaMaxWynn901/ai_dashboard_2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AnitaMaxWynn901/ai_dashboard_2/issues"
+  },
+  "homepage": "https://github.com/AnitaMaxWynn901/ai_dashboard_2#readme"
 }
