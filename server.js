@@ -878,7 +878,7 @@ mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
     console.log("MongoDB Connected");
     await startOfflineChecker();
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server running on port ${PORT}`);
     });
   })
