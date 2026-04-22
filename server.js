@@ -78,18 +78,22 @@ app.get("/dashboard-user.html", requirePageAuth, (req, res) => {
 app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
+    console.log("Login attempt:", username);
+
 
     if (!username || !password) {
       return res.status(400).json({ error: "Username and password are required" });
     }
 
     const user = await User.findOne({ username: username.trim() });
+    console.log("User found:", user ? "YES" : "NO");
 
     if (!user || !user.isActive) {
       return res.status(401).json({ error: "Invalid username or password" });
     }
 
     const isMatch = await bcrypt.compare(password, user.passwordHash);
+    console.log("Password match:", isMatch);
 
     if (!isMatch) {
       return res.status(401).json({ error: "Invalid username or password" });
