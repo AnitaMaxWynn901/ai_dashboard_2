@@ -1,27 +1,31 @@
-const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
+const { createClient } = require("@supabase/supabase-js");
 
-const User = require("./models/User");
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
 
 async function createUsers() {
-    await mongoose.connect(process.env.MONGO_URI);
+  const password = "admin123"; // change later
+  const hash = await bcrypt.hash(password, 10);
 
-    const password = "admin123"; // change later
+  const { data, error } = await supabase.from("users").insert([
+    {
+      username: "superadmin",
+      password_hash: hash,
+      role: "super-admin"
+    }
+  ]);
 
-    const hash = await bcrypt.hash(password, 10);
-
-    await User.create([
-        {
-            username: "superadmin",
-            passwordHash: hash,
-            role: "super-admin"
-        },
-       
-    ]);
-
+  if (error) {
+    console.error("Failed to create user:", error.message);
+  } else {
     console.log("Users created");
-    process.exit();
+  }
+
+  process.exit();
 }
 
 createUsers();
